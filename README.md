@@ -1,5 +1,5 @@
 # scikit-mlm
-scikit-rvm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
+scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
 
 ## Quickstart
 With NumPy, SciPy and scikit-learn available in your environment, install with:
