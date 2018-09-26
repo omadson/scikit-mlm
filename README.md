@@ -47,8 +47,12 @@ mean_squared_error(y_test, y_hat)
 ### Missing values
  - [ ] [expected squared distance MLM (ESD-MLM)](https://doi.org/10.1007/978-3-319-26532-2_62)
 
+### Cost Sensitive
+ - [ ] [weighted MLM (wMLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
+
 ### Reject option
- - [ ] [Efficient minimal learning machines with reject option](https://doi.org/10.1109/BRACIS.2016.078)
+ - [ ] [reject option MLM (renjo-MLM)](https://doi.org/10.1109/BRACIS.2016.078)
+ - [ ] [reject option weighted MLM (renjo-wMLM)](https://doi.org/10.1109/BRACIS.2016.078)
 
 ### Reference points selection methods
  - [ ] [opposite neighborhood MLM (ON-MLM)](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-198.pdf)
