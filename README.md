@@ -1,4 +1,4 @@
-# scikit-mlm
+# scikit-mlm\*
 scikit-rvm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
 
 ## Quickstart
@@ -29,6 +29,11 @@ mean_squared_error(y_test, y_hat)
 ```
 ## Contributors
  - [Madson Dias](https://github.com/omadson)
+
+---
+
+\* the initial idea of this project is based on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo, of  @JamesRitchie. The contributors acknowledge your help :heart:.
+
 
 [1]: https://doi.org/10.1016/j.neucom.2014.11.073
 [2]: http://scikit-learn.org/
