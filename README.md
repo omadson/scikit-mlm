@@ -1,7 +1,7 @@
 # scikit-mlm\*
 scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
 
-## Quickstart
+## quickstart
 With NumPy, SciPy and scikit-learn available in your environment, install with:
 ```
 pip3 install https://github.com/omadson/scikit-mlm/archive/master.zip
@@ -28,7 +28,7 @@ y_hat = clf.predict(X_test)
 mean_squared_error(y_test, y_hat)
 ```
 
-## To-do list
+## to-do list
 ### original proposal
  - [x] [regression (MLMR)](https://doi.org/10.1016/j.neucom.2014.11.073)
  - [ ] [classification (MLMC)](https://doi.org/10.1016/j.neucom.2014.11.073)
@@ -37,32 +37,32 @@ mean_squared_error(y_test, y_hat)
  - [ ] [nearest neighbor MLM (NN-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9)
  - [ ] [cubic equation MLM (C-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10)
 
-### Reference points selection methods
+### reference points selection methods
  - [ ] [opposite neighborhood MLM (ON-MLM)](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-198.pdf)
  - [ ] [fuzzy C-means MLM (FCM-MLM)](https://doi.org/10.1007/978-3-319-95312-0_34)
  <!-- - [ ] [optimally selected MLM (L$_{1/2}$-MLM)]()
  - [ ] [optimally selected MLM (OS-MLM)]() -->
 
-### Cost Sensitive
+### cost Sensitive
  - [ ] [weighted MLM (wMLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
 
-### Missing values
+### missing values
  - [ ] [expected squared distance MLM (ESD-MLM)](https://doi.org/10.1007/978-3-319-26532-2_62)
 
-### Ensemble
+### ensemble
  - [ ] [voting based MLM (V-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec11)
  - [ ] [weighted voting based MLM (WV-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec11)
  - [ ] [random sampling voting based MLM (RSV-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec11)
  - [ ] [random sampling weighted voting based MLM (RSWV-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec11)
 
-### Reject option
+### reject option
  - [ ] [reject option MLM (renjo-MLM)](https://doi.org/10.1109/BRACIS.2016.078)
  - [ ] [reject option weighted MLM (renjo-wMLM)](https://doi.org/10.1109/BRACIS.2016.078)
 
-### Ranking
+### ranking
  - [ ] [ranking MLM (R-MLM)](https://doi.org/10.1109/BRACIS.2015.39)
 
-## Contributors
+## contributors
  - [Madson Dias](https://github.com/omadson)
 
 ---
