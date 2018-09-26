@@ -32,7 +32,7 @@ mean_squared_error(y_test, y_hat)
 
 ---
 
-\* the initial idea of this project is based on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo, of  @JamesRitchie. The contributors acknowledge your help :heart:.
+\* the initial idea of this project is based on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo, of  [@JamesRitchie](https://github.com/JamesRitchie). The contributors acknowledge your help :heart:.
 
 
 [1]: https://doi.org/10.1016/j.neucom.2014.11.073
