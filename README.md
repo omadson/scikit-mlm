@@ -40,8 +40,8 @@ mean_squared_error(y_test, y_hat)
 ### Reference points selection methods
  - [ ] [opposite neighborhood MLM (ON-MLM)](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-198.pdf)
  - [ ] [fuzzy C-means MLM (FCM-MLM)](https://doi.org/10.1007/978-3-319-95312-0_34)
- - [ ] [optimally selected MLM (L$_{1/2}$-MLM)]()
- - [ ] [optimally selected MLM (OS-MLM)]()
+ <!-- - [ ] [optimally selected MLM (L$_{1/2}$-MLM)]()
+ - [ ] [optimally selected MLM (OS-MLM)]() -->
 
 ### Cost Sensitive
  - [ ] [weighted MLM (wMLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
