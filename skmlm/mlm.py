@@ -185,11 +185,11 @@ class ON_MLM(NN_MLM):
         D_in  = D_in  if isinstance(D_in, np.ndarray)  else sp.spatial.distance.cdist(X,X)
         D_out = D_out if isinstance(D_out, np.ndarray) else sp.spatial.distance.cdist(y,y)
 
-        D_sort = D_in.argsort(axis=0)
         DD = D_out != 0
         opposite_neighborhood = set()
-        for i in range(D_sort.shape[0]):
-            opposite_neighborhood = opposite_neighborhood.union(set(D_sort[i,DD[i,:]][:neighborhood_size]))
+        for i in range(D_out.shape[0]):
+            DDD = D_in[i,:].argsort()
+            opposite_neighborhood = opposite_neighborhood.union(set(DDD[DD[i,DDD]][:neighborhood_size]))
         on_index = np.zeros(X.shape[0])
         on_index[list(opposite_neighborhood)] = 1
         return on_index == 1, D_in, D_out
@@ -200,7 +200,7 @@ class ON_MLM(NN_MLM):
 
         # opposite neighborhood procedure
         # first time
-        on_index_1, D_in, D_out = self.ON(X, y, self.neighborhood_size)
+        on_index_1, D_in, D_out = self.ON(X, y, neighborhood_size=self.neighborhood_size)
         # second time
         on_index_2,_,_ = self.ON(X[~on_index_1,:],
                              y[~on_index_1,:],
@@ -211,8 +211,8 @@ class ON_MLM(NN_MLM):
         self.rp_index = np.array([i for i, x in enumerate(~on_index_1) if x])[[i for i, x in enumerate(on_index_2) if x]]
 
 
-        self.rp_X     = X[self.rp_index]
-        self.rp_y     = y[self.rp_index]
+        self.rp_X     = X[self.rp_index,:]
+        self.rp_y     = y[self.rp_index,:]
 
         # compute pairwise distance matrices
         #  - D_in: input space
