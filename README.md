@@ -31,7 +31,7 @@ mean_squared_error(y_test, y_hat)
 ## to-do list
 ### original proposal
  - [x] [regression (MLMR)](https://doi.org/10.1016/j.neucom.2014.11.073)
- - [ ] [classification (MLMC)](https://doi.org/10.1016/j.neucom.2014.11.073)
+ - [x] [classification (MLMC)](https://doi.org/10.1016/j.neucom.2014.11.073)
 
 ### speed up
  - [ ] [nearest neighbor MLM (NN-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9)
