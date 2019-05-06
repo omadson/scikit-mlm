@@ -225,4 +225,41 @@ class ON_MLM(NN_MLM):
         self.B = np.linalg.pinv(self.D_in).dot(self.D_out)
 
         return self
+
+
+
+class w_MLM(NN_MLM):
+    def __init__(self, rp_number=None):
+
+        # number of reference points
+        self.rp_number = rp_number
+
+    def fit(self, X, y=None):
+        # convert outputs to one-hot encoding
+        w = np.zeros(y.shape)
+        labels = np.unique(y)
+        for label in labels:
+            w[y == label] = np.mean(y == label)
+        y = self.one_hot(y) if len(y.shape) == 1 else y
+
+        # random select of reference points for inputs and outputs
+        if self.rp_number == None:
+            self.rp_number = int(np.ceil(0.1 * X.shape[0]))
+        self.rp_index = np.random.choice(X.shape[0], self.rp_number, replace=False)
+        self.rp_X     = X[self.rp_index,:]
+        self.rp_y     = y[self.rp_index,:]
+
+        # compute pairwise distance matrices
+        #  - D_in: input space
+        #  - D_out: output space
+        self.D_in  = sp.spatial.distance.cdist(X,self.rp_X)
+        self.D_out = sp.spatial.distance.cdist(y,self.rp_y)
+
+
+
+        self.W = np.diag(w)
+        # compute the distance regression matrix using OLS
+        self.B = np.linalg.inv(self.D_in.T.dot(self.W).dot(self.D_in)).dot(self.D_in.T).dot(self.W).dot(self.D_out)
+
+        return self
         

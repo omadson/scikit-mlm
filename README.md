@@ -44,7 +44,7 @@ mean_squared_error(y_test, y_hat)
  - [ ] [optimally selected MLM (OS-MLM)](https://doi.org/10.1007/978-3-030-03493-1_70)
 
 ### cost Sensitive
- - [ ] [weighted MLM (wMLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
+ - [x] [weighted MLM (wMLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
 
 ### missing values
  - [ ] [expected squared distance MLM (ESD-MLM)](https://doi.org/10.1007/978-3-319-26532-2_62)
