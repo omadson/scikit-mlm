@@ -1,7 +1,7 @@
 """Minimal Learning Machine classes for regression and classification."""
 import numpy as np
 import scipy as sp
-import time
+import itertools
 
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
@@ -263,3 +263,78 @@ class w_MLM(NN_MLM):
 
         return self
         
+
+class OS_MLM(NN_MLM):
+    def __init__(self, max_rp_number=None):
+
+        # number of reference points
+        self.max_rp_number = max_rp_number
+
+    def fit(self, X, y=None):
+        # convert outputs to one-hot encoding
+        y = self.one_hot(y) if len(y.shape) == 1 else y
+
+        self.D_in  = sp.spatial.distance.cdist(X,X)
+        self.D_out  = (y * (-1)) + 1
+
+        self.B, self.rp_index = self.mrsr(self.D_in, self.D_out, norm=1, max_k=self.max_rp_number)
+        # self.B = self.B[self.B != 0]
+
+        self.B = self.B[self.rp_index,:]        
+
+        self.rp_X = X[self.rp_index,:]
+        self.rp_y = np.eye(y.shape[1])
+
+        return self
+
+
+
+    def mrsr(self,X, T, norm=1, max_k=None):
+        n, m = X.shape
+        q    = T.shape[1] 
+        c_k = np.zeros(m)
+        W_k = np.zeros((m,q))
+        A = set()
+        Y_k     = X.dot(W_k)
+
+        max_k = range(m-1) if max_k == None else range(max_k)
+        for k in max_k:
+            # selecionar a coluna mais correlacionada   
+            (T - Y_k).shape
+            C_k     = (T - Y_k).T.dot(X)
+            c_k     = np.array([np.linalg.norm(C_k[:,j],1) for j in range(m)])
+            c_k[list(A)] = 0
+            c_k_hat = c_k.argmax()
+            A       = A.union({c_k_hat})
+            X_k     = X[:,list(A)]
+            
+            W_k_hat = np.linalg.pinv(X_k).dot(T)
+            Y_k_hat = X_k.dot(W_k_hat)
+            
+            W_k_hat_ = np.zeros((m,q))
+            
+            W_k_hat_[list(A),:] = W_k_hat
+            
+            # escolha do lb
+            S = np.array(list(itertools.product([0, 1], repeat=q)))
+            S[S == 0] = -1
+            
+            U_k = C_k.copy()
+            V_k = (Y_k_hat - Y_k).T.dot(X)
+            lb = list()
+            for j in set(range(m)).difference(A):
+                u_kj = U_k[:,j]
+                v_kj = V_k[:,j]
+                LB = list()
+                for i in range(S.shape[0]):
+                    s = S[i,:]
+                    LB.append((c_k_hat - s.T.dot(u_kj)) / (c_k_hat - s.T.dot(v_kj)))
+                LB = np.array(LB)
+                lb.append(LB[LB>0].min())
+            
+            lb_op = np.array(lb).min()
+            
+            Y_k = ((1 - lb_op) * Y_k) + (lb_op * Y_k_hat)
+            W_k = ((1 - lb_op) * W_k) + (lb_op * W_k_hat_)
+            
+        return W_k,list(A)
