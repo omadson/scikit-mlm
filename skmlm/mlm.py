@@ -60,7 +60,7 @@ def mrsr(X, T, norm=1, max_k=None):
             try:
                 lb.append(LB[LB>0].min())
             except Exception as e:
-                print(LB)
+                lb.append(np.abs(LB).min())
         
         lb_op = np.array(lb).min()
         
