@@ -67,8 +67,8 @@ if you use scikit-mlm in your paper, please cite
 ```
 @misc{scikit-mlm,
     author       = "Madson Luiz Dantas Dias",
-    year         = "2019"
-    title        = "Scikit {MLM} implementation",
+    year         = "2019",
+    title        = "scikit-mlm: A implementation of {MLM} for scikit framework",
     url          = "https://github.com/omadson/scikit-mlm",
     institution  = "Federal University of Cear\'{a}, Department of Computer Science" 
 }
