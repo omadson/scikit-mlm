@@ -9,23 +9,19 @@ pip3 install https://github.com/omadson/scikit-mlm/archive/master.zip
 
 Regression example with the MLMR class:
 ```Python
-import numpy as np
-from skmlm import MLMR
-from sklearn.datasets import load_boston
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
+from skmlm import NN_MLM
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import cross_val_score
+from sklearn.pipeline import make_pipeline
+from sklearn.datasets import load_iris
 
+# load dataset
+dataset = load_iris()
 
-boston = load_boston()
+clf = make_pipeline(MinMaxScaler(), NN_MLM(rp_number=20))
+scores = cross_val_score(clf, dataset.data, dataset.target, cv=10, scoring='accuracy')
 
-X_train, X_test, y_train, y_test = train_test_split(boston.data, boston.target, test_size=0.2)
-
-clf = MLMR(rp_number=130)
-clf.fit(X_train, y_train)
-
-y_hat = clf.predict(X_test)
-
-mean_squared_error(y_test, y_hat)
+print('AVG = %.3f, STD = %.3f' % (scores.mean(), scores.std()))
 ```
 
 ## to-do list
@@ -67,7 +63,7 @@ mean_squared_error(y_test, y_hat)
  - [ ] [ranking MLM (R-MLM)](https://doi.org/10.1109/BRACIS.2015.39)
 
 ## how to cite scikit-mlm
-if you use scikit-mlm in your paper, please cite using
+if you use scikit-mlm in your paper, please cite
 ```
 @misc{scikit-mlm,
     author       = "Madson Luiz Dantas Dias",
