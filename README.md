@@ -7,7 +7,7 @@ With NumPy, SciPy and scikit-learn available in your environment, install with:
 pip3 install https://github.com/omadson/scikit-mlm/archive/master.zip
 ```
 
-Regression example with the MLMR class:
+Classification example with the nearest neighbor MLM classifier:
 ```Python
 from skmlm import NN_MLM
 from sklearn.preprocessing import MinMaxScaler
