@@ -82,7 +82,10 @@ def ON(X, y, neighborhood_size=1, D_in=None, D_out=None):
         opposite_neighborhood = opposite_neighborhood.union(set(DDD[DD[i,DDD]][:neighborhood_size]))
     on_index = np.zeros(X.shape[0])
     on_index[list(opposite_neighborhood)] = 1
-    return on_index == 1, D_in, D_out
+    if len(opposite_neighborhood) == X.shape[0]:
+        return on_index == 1, D_in, D_out
+    else:
+        return ON(X, y, neighborhood_size=neighborhood_size-1, D_in=D_in, D_out=D_in):
 
 
 
