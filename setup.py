@@ -37,7 +37,6 @@ setup(
         'numpy>=1.15.2',
         'scipy>=1.1.0',
         'scikit-learn>=0.19.1',
-        'https://github.com/omadson/fuzzy-c-means/archive/master.zip'
     ],
     zip_safe=False,
     classifiers=[
