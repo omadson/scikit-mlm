@@ -37,7 +37,7 @@ setup(
         'scikit-learn>=0.19.1',
         'fuzzycmeans==1.1'
     ],
-    dependency_links = ['https://github.com/omadson/fuzzy-c-means/tarball/master#v1.1'],
+    dependency_links = ['git+ssh://git@github.com/omadson/fuzzy-c-means.git#egg=fuzzy-c-means-1.1'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
