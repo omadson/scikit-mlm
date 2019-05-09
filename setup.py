@@ -35,7 +35,9 @@ setup(
         'numpy>=1.15.2',
         'scipy>=1.1.0',
         'scikit-learn>=0.19.1',
+        'fuzzycmeans==1.1'
     ],
+    dependency_links = ['https://github.com/omadson/fuzzy-c-means/tarball/master#v1.1'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
