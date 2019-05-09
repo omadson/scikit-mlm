@@ -1,4 +1,4 @@
-# scikit-mlm\*
+# scikit-mlm
 scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
 
 ## quickstart
@@ -77,9 +77,14 @@ if you use scikit-mlm in your paper, please cite
 ## contributors
  - [Madson Dias](https://github.com/omadson)
 
+## acknowledgement
+The code here is inspired by the repository try-tf.
+ - the initial idea of this project is inspired on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo, of  [@JamesRitchie](https://github.com/JamesRitchie). The contributors acknowledge your help :heart:.
+ - thanks for [@ahmad88me](https://github.com/ahmad88me) for the Fuzzy *C*-means implementation.
+
 ---
 
-\* the initial idea of this project is based on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo, of  [@JamesRitchie](https://github.com/JamesRitchie). The contributors acknowledge your help :heart:
+
 
 
 [1]: https://doi.org/10.1016/j.neucom.2014.11.073
