@@ -78,9 +78,8 @@ if you use scikit-mlm in your paper, please cite
  - [Madson Dias](https://github.com/omadson)
 
 ## acknowledgement
-The code here is inspired by the repository try-tf.
- - the initial idea of this project is inspired on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo, of  [@JamesRitchie](https://github.com/JamesRitchie). The contributors acknowledge your help :heart:.
- - thanks for [@ahmad88me](https://github.com/ahmad88me) for the Fuzzy *C*-means implementation.
+ - thanks for [@JamesRitchie](https://github.com/JamesRitchie), the initial idea of this project is inspired on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo
+ - thanks for [@ahmad88me](https://github.com/ahmad88me) for the [Fuzzy *C*-means implementation](https://github.com/oeg-upm/fuzzy-c-means)
 
 ---
 
