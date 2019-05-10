@@ -36,8 +36,10 @@ setup(
         'scipy>=1.1.0',
         'scikit-learn>=0.21.0',
         'pandas>=0.23.4',
-        'fcmeans @ git+ssh://git@github.com/omadson/fuzzycmeans@master>'
+        'fcmeans'
+        
     ],
+    dependency_links=['http://github.com/omadson/fcmeans/tarball/master'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
