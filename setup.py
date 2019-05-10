@@ -39,7 +39,7 @@ setup(
         'fcmeans'
         
     ],
-    dependency_links=['http://github.com/omadson/fcmeans/tarball/master'],
+    dependency_links=['git+http://github.com/omadson/fcmeans/tarball/master'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
