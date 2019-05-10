@@ -34,7 +34,7 @@ setup(
     install_requires=[
         'numpy>=1.15.4',
         'scipy>=1.1.0',
-        'scikit-learn>=0.19.1',
+        'scikit-learn',
         'pandas>=0.23.4',
         'fuzzycmeans @ https://github.com/omadson/fuzzy-clustering/archive/master.zip'
     ],
