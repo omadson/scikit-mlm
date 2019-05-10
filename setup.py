@@ -36,7 +36,7 @@ setup(
         'scipy>=1.1.0',
         'scikit-learn>=0.21.0',
         'pandas>=0.23.4',
-        'fuzzycmeans @ https://github.com/omadson/fuzzy-clustering/archive/master.zip'
+        'fuzzycmeans @ https://github.com/omadson/fuzzycmeans/archive/master.zip'
     ],
     zip_safe=False,
     classifiers=[
