@@ -32,7 +32,7 @@ setup(
     license='BSD',
     packages=find_packages(exclude=['tests*']),
     install_requires=[
-        'numpy>=1.15.2',
+        'numpy>=1.15.4',
         'scipy>=1.1.0',
         'scikit-learn>=0.19.1',
         'pandas>=0.23.4',
