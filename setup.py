@@ -36,8 +36,9 @@ setup(
         'scipy>=1.1.0',
         'scikit-learn>=0.21.0',
         'pandas>=0.23.4',
-        'fcmeans @ https://github.com/omadson/fuzzycmeans/archive/master.zip'
+        'fcmeans'
     ],
+    dependency_links=['git+ssh://git@github.com/omadson/fuzzycmeans.git'],
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
