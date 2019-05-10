@@ -1,8 +1,9 @@
 """Minimal Learning Machine classes for regression and classification."""
 import numpy as np
 import scipy as sp
+import pandas as pd
 import itertools
-
+from fuzzycmeans import FCM
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
 # UTILS functions used in some codes
@@ -274,4 +275,31 @@ class OS_MLM(NN_MLM):
 
 
 
-    
+class FCM_MLM(NN_MLM):
+    def __init__(self, max_rp_number=None):
+
+        # number of reference points
+        self.max_rp_number = max_rp_number
+
+    def fit(self, X, y=None):
+        
+
+        # 
+        fcm = FCM(n_clusters=self.max_rp_number)
+        fcm.fit(X)
+        c = fcm.u.argmax(axis=1)
+        homongenious_clusters = np.where(pd.DataFrame({'c': c, 'y': y}).groupby('c').mean().isin(np.unique(y)))[0]
+
+
+        # convert outputs to one-hot encoding
+        y = one_hot(y) if len(y.shape) == 1 else y
+
+        
+
+        self.rp_X  = fcm.centers[homongenious_clusters,:]
+        self.rp_y = np.eye(y.shape[1])
+
+        self.D_in  = sp.spatial.distance.cdist(X,self.rp_X)
+        self.D_out  = (y * (-1)) + 1
+
+        self.B = np.linalg.pinv(self.D_in).dot(self.D_out)
