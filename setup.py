@@ -44,6 +44,6 @@ setup(
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.5.2',
+        'Programming Language :: Python :: 3.5',
     ]
 )
