@@ -4,7 +4,11 @@ import sys
 
 from setuptools import setup, find_packages
 
-version = '0.0.1'
+
+with open("DESCRIPTION.md", "r") as fh:
+    long_description = fh.read()
+
+version = '0.0.3'
 
 if sys.argv[-1] == 'publish':
     if os.system("pip freeze | grep wheel"):
@@ -23,9 +27,9 @@ if sys.argv[-1] == 'publish':
 setup(
     name='scikit-mlm',
     version=version,
-    description=(
-        'Minimal Learning Machine implementation using the scikit-learn API'
-    ),
+    description='Minimal Learning Machine implementation using the scikit-learn API',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url='https://github.com/omadson/scikit-mlm',
     author='Madson Dias',
     author_email='madsonddias@gmail.com',
