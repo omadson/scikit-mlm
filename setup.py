@@ -13,7 +13,7 @@ setup(
     name='scikit-mlm',
     version='0.0.6',
     description='Minimal Learning Machine implementation using the scikit-learn API',
-    long_description=read("DESCRIPTION.md"),
+    long_description=read("README.md"),
     long_description_content_type="text/markdown",
     url='https://github.com/omadson/scikit-mlm',
     author='Madson Dias',

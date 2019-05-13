@@ -2,7 +2,7 @@
 scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
 
 ## quickstart
-With NumPy, SciPy and scikit-learn available in your environment, install with:
+install with:
 ```
 pip install scikit-mlm
 ```
@@ -24,29 +24,29 @@ scores = cross_val_score(clf, dataset.data, dataset.target, cv=10, scoring='accu
 print('AVG = %.3f, STD = %.3f' % (scores.mean(), scores.std()))
 ```
 
-## to-do list
+## implemented methods
 ### original proposal
- - [x] [regression (MLMR)](https://doi.org/10.1016/j.neucom.2014.11.073)
- - [x] [classification (MLMC)](https://doi.org/10.1016/j.neucom.2014.11.073)
+ - [regression (MLMR)](https://doi.org/10.1016/j.neucom.2014.11.073)
+ - [classification (MLMC)](https://doi.org/10.1016/j.neucom.2014.11.073)
 
 ### speed up
- - [x] [nearest neighbor MLM (NN_MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9)
- - [ ] [cubic equation MLM (C-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10)
+ - [nearest neighbor MLM (NN_MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9)
+<!--  - [ ] [cubic equation MLM (C-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10) -->
 
 ### reference points selection methods
 #### classification
- - [x] [opposite neighborhood MLM (ON_MLM)](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-198.pdf)
- - [x] [fuzzy C-means MLM (FCM-MLM)](https://doi.org/10.1007/978-3-319-95312-0_34)
- - [ ] [&ell;<sub>1/2</sub>-norm regularization MLM (L12_MLM)](https://doi.org/10.1109/BRACIS.2018.00043)
- - [ ] [optimally selected MLM (OS-MLM)](https://doi.org/10.1007/978-3-030-03493-1_70)
+ - [opposite neighborhood MLM (ON_MLM)](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-198.pdf)
+ - [fuzzy C-means MLM (FCM-MLM)](https://doi.org/10.1007/978-3-319-95312-0_34)
+<!--  - [ ] [&ell;<sub>1/2</sub>-norm regularization MLM (L12_MLM)](https://doi.org/10.1109/BRACIS.2018.00043)
+ - [ ] [optimally selected MLM (OS-MLM)](https://doi.org/10.1007/978-3-030-03493-1_70) -->
 
 <!-- #### regression
  - [ ] [regularized M-FOCUSS MLM (RMF_MLM)]() -->
 
 ### cost Sensitive
- - [x] [weighted MLM (w_MLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
+ - [weighted MLM (w_MLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
 
-### missing values
+<!-- ### missing values
  - [ ] [expected squared distance MLM (ESD-MLM)](https://doi.org/10.1007/978-3-319-26532-2_62)
 
 ### ensemble
@@ -60,7 +60,7 @@ print('AVG = %.3f, STD = %.3f' % (scores.mean(), scores.std()))
  - [ ] [reject option weighted MLM (renjo-wMLM)](https://doi.org/10.1109/BRACIS.2016.078)
 
 ### ranking
- - [ ] [ranking MLM (R-MLM)](https://doi.org/10.1109/BRACIS.2015.39)
+ - [ ] [ranking MLM (R-MLM)](https://doi.org/10.1109/BRACIS.2015.39) -->
 
 ## how to cite scikit-mlm
 if you use scikit-mlm in your paper, please cite
