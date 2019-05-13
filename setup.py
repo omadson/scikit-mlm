@@ -5,14 +5,15 @@ import sys
 from setuptools import setup, find_packages
 
 
-with open("DESCRIPTION.md", "r") as fh:
-    long_description = fh.read()
+def read(filename):
+    with open(filename, "r") as fh:
+        return fh.read()
 
 setup(
     name='scikit-mlm',
-    version='0.0.5',
+    version='0.0.6',
     description='Minimal Learning Machine implementation using the scikit-learn API',
-    long_description=long_description,
+    long_description=read("DESCRIPTION.md"),
     long_description_content_type="text/markdown",
     url='https://github.com/omadson/scikit-mlm',
     author='Madson Dias',
