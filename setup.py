@@ -10,7 +10,7 @@ with open("DESCRIPTION.md", "r") as fh:
 
 setup(
     name='scikit-mlm',
-    version='0.0.4',
+    version='0.0.5',
     description='Minimal Learning Machine implementation using the scikit-learn API',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -24,7 +24,7 @@ setup(
         'scipy>=1.1.0',
         'scikit-learn>=0.21.0',
         'pandas>=0.23.4',
-        'fuzzycmeans'
+        'fuzzy-c-means>=0.0.3'
         
     ],
     zip_safe=False,

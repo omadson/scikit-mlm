@@ -35,6 +35,7 @@ print('AVG = %.3f, STD = %.3f' % (scores.mean(), scores.std()))
 ### reference points selection methods
 #### classification
  - [opposite neighborhood MLM (ON_MLM)](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-198.pdf)
+ - [fuzzy C-means MLM (FCM-MLM)](https://doi.org/10.1007/978-3-319-95312-0_34)
 
 <!-- #### regression
  - [ ] [regularized M-FOCUSS MLM (RMF_MLM)]() -->

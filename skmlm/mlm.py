@@ -3,7 +3,7 @@ import numpy as np
 import scipy as sp
 import pandas as pd
 import itertools
-# from fuzzycmeans import FCM
+from fcmeans import FCM
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 
 # UTILS functions used in some codes
@@ -23,13 +23,13 @@ def mrsr(X, T, norm=1, max_k=None):
     c_k = np.zeros(m)
     W_k = np.zeros((m,q))
     A = set()
-    Y_k     = X.dot(W_k)
+    Y_k     = X @ W_k
 
     max_k = range(m-1) if max_k == None else range(max_k)
     for k in max_k:
         # selecionar a coluna mais correlacionada   
         (T - Y_k).shape
-        C_k     = (T - Y_k).T.dot(X)
+        C_k     = (T - Y_k).T @ X
         c_k     = np.array([np.linalg.norm(C_k[:,j],1) for j in range(m)])
         c_k[list(A)] = 0
         c_k_hat = c_k.argmax()
@@ -37,7 +37,7 @@ def mrsr(X, T, norm=1, max_k=None):
         X_k     = X[:,list(A)]
         
         W_k_hat = np.linalg.pinv(X_k).dot(T)
-        Y_k_hat = X_k.dot(W_k_hat)
+        Y_k_hat = X_k @ W_k_hat
         
         W_k_hat_ = np.zeros((m,q))
         
@@ -48,7 +48,7 @@ def mrsr(X, T, norm=1, max_k=None):
         S[S == 0] = -1
         
         U_k = C_k.copy()
-        V_k = (Y_k_hat - Y_k).T.dot(X)
+        V_k = (Y_k_hat - Y_k).T @ X
         lb = list()
         for j in set(range(m)).difference(A):
             u_kj = U_k[:,j]
@@ -56,7 +56,7 @@ def mrsr(X, T, norm=1, max_k=None):
             LB = list()
             for i in range(S.shape[0]):
                 s = S[i,:]
-                LB.append((c_k_hat - s.T.dot(u_kj)) / (c_k_hat - s.T.dot(v_kj)))
+                LB.append((c_k_hat - s.T @ u_kj) / (c_k_hat - s.T @ v_kj))
             LB = np.array(LB)
             try:
                 lb.append(LB[LB>0].min())
@@ -113,7 +113,7 @@ class MLMR(BaseEstimator, RegressorMixin):
         self.D_out = sp.spatial.distance.cdist(y,self.rp_y)
 
         # compute the distance regression matrix using OLS
-        self.B = np.linalg.pinv(self.D_in).dot(self.D_out)
+        self.B = np.linalg.pinv(self.D_in) @ self.D_out
 
         return self
 
@@ -142,7 +142,7 @@ class MLMR(BaseEstimator, RegressorMixin):
         d_out = sp.spatial.distance.cdist(y,self.rp_y)
 
         # compute the internal cost function
-        return (d_out**2 - d_in.dot(self.B)**2)[0]
+        return (d_out**2 - (d_in @ self.B)**2)[0]
 
 # MLM for classification: https://doi.org/10.1016/j.neucom.2014.11.073
 class MLMC(MLMR):
@@ -173,7 +173,7 @@ class NN_MLM(MLMC):
         # compute matrix of distances from input RPs
         D_in = sp.spatial.distance.cdist(X,self.rp_X)
         # estimate matrix of distances from output RPs
-        D_out_hat = D_in.dot(self.B)
+        D_out_hat = D_in @ self.B
 
         return self.rp_y[D_out_hat.argmin(axis=1),:].argmax(axis=1)
 
@@ -213,7 +213,7 @@ class ON_MLM(NN_MLM):
         self.D_out = D_out[:,self.rp_index] 
 
         # compute the distance regression matrix using OLS
-        self.B = np.linalg.pinv(self.D_in).dot(self.D_out)
+        self.B = np.linalg.pinv(self.D_in) @ self.D_out
 
         return self
 
@@ -245,7 +245,7 @@ class w_MLM(NN_MLM):
 
         self.W = np.diag(w)
         # compute the distance regression matrix using OLS
-        self.B = np.linalg.inv(self.D_in.T.dot(self.W).dot(self.D_in)).dot(self.D_in.T).dot(self.W).dot(self.D_out)
+        self.B = np.linalg.inv(self.D_in.T @ self.W @ self.D_in) @ self.D_in.T @ self.W @ self.D_out
 
         return self
         
@@ -275,31 +275,31 @@ class OS_MLM(NN_MLM):
 
 
 
-# class FCM_MLM(NN_MLM):
-#     def __init__(self, max_rp_number=None):
+class FCM_MLM(NN_MLM):
+    def __init__(self, max_rp_number=None):
 
-#         # number of reference points
-#         self.max_rp_number = max_rp_number
+        # number of reference points
+        self.max_rp_number = max_rp_number
 
-#     def fit(self, X, y=None):
+    def fit(self, X, y=None):
         
 
-#         # 
-#         fcm = FCM(n_clusters=self.max_rp_number)
-#         fcm.fit(X)
-#         c = fcm.u.argmax(axis=1)
-#         homongenious_clusters = np.where(pd.DataFrame({'c': c, 'y': y}).groupby('c').mean().isin(np.unique(y)))[0]
+        # 
+        fcm = FCM(n_clusters=self.max_rp_number)
+        fcm.fit(X)
+        c = fcm.u.argmax(axis=1)
+        homongenious_clusters = np.where(pd.DataFrame({'c': c, 'y': y}).groupby('c').mean().isin(np.unique(y)))[0]
 
 
-#         # convert outputs to one-hot encoding
-#         y = one_hot(y) if len(y.shape) == 1 else y
+        # convert outputs to one-hot encoding
+        y = one_hot(y) if len(y.shape) == 1 else y
 
         
 
-#         self.rp_X  = np.array(fcm.cluster_centers_)[homongenious_clusters,:]
-#         self.rp_y = np.eye(y.shape[1])
+        self.rp_X  = fcm.centers[homongenious_clusters,:]
+        self.rp_y = np.eye(y.shape[1])
 
-#         self.D_in  = sp.spatial.distance.cdist(X,self.rp_X)
-#         self.D_out  = (y * (-1)) + 1
+        self.D_in  = sp.spatial.distance.cdist(X,self.rp_X)
+        self.D_out  = (y * (-1)) + 1
 
-#         self.B = np.linalg.pinv(self.D_in).dot(self.D_out)
+        self.B = np.linalg.pinv(self.D_in) @ self.D_out
