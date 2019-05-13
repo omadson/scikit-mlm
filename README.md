@@ -4,7 +4,7 @@ scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (ML
 ## quickstart
 With NumPy, SciPy and scikit-learn available in your environment, install with:
 ```
-pip3 install https://github.com/omadson/scikit-mlm/archive/master.zip
+pip install scikit-mlm
 ```
 
 Classification example with the nearest neighbor MLM classifier:
@@ -79,11 +79,6 @@ if you use scikit-mlm in your paper, please cite
 
 ## acknowledgement
  - thanks for [@JamesRitchie](https://github.com/JamesRitchie), the initial idea of this project is inspired on the [scikit-rvm](https://github.com/JamesRitchie/scikit-rvm) repo
- - thanks for [@ahmad88me](https://github.com/ahmad88me) for the [Fuzzy *C*-means implementation](https://github.com/oeg-upm/fuzzy-c-means)
-
----
-
-
 
 
 [1]: https://doi.org/10.1016/j.neucom.2014.11.073
