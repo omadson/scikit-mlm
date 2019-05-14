@@ -16,8 +16,15 @@ def one_hot(y):
     y_oh[np.arange(l), y] = 1
     return y_oh
 
+def PRESS(D_in,D_out,B):
+    D = D_out.shape[1]
+    error = np.zeros(D)
+    for d in range(D):
+        error = (np.divide(D_out[:,d] - D_in @ B[:,d],np.diag(D_in @ np.linalg.inv(D_in.T @ D_in) @ D_in.T)) ** 2).mean()
+    return error.mean()
+
 # multiresponse sparse regression
-def mrsr(X, T, norm=1, max_k=None):
+def mrsr(X, T, norm=1, max_k=None,n_var=10):
     n, m = X.shape
     q    = T.shape[1] 
     c_k = np.zeros(m)
@@ -25,23 +32,27 @@ def mrsr(X, T, norm=1, max_k=None):
     A = set()
     Y_k     = X @ W_k
 
+    error = np.zeros(max_k)
+    order = list()
+
     max_k = range(m-1) if max_k == None else range(max_k)
     for k in max_k:
         # selecionar a coluna mais correlacionada   
         (T - Y_k).shape
         C_k     = (T - Y_k).T @ X
         c_k     = np.array([np.linalg.norm(C_k[:,j],1) for j in range(m)])
-        c_k[list(A)] = 0
+        c_k[order] = 0
         c_k_hat = c_k.argmax()
-        A       = A.union({c_k_hat})
-        X_k     = X[:,list(A)]
+        # A       = A.union({c_k_hat})
+        order.append(int(c_k_hat))
+        X_k     = X[:,order]
         
         W_k_hat = np.linalg.pinv(X_k).dot(T)
         Y_k_hat = X_k @ W_k_hat
         
         W_k_hat_ = np.zeros((m,q))
         
-        W_k_hat_[list(A),:] = W_k_hat
+        W_k_hat_[order,:] = W_k_hat
         
         # escolha do lb
         S = np.array(list(itertools.product([0, 1], repeat=q)))
@@ -50,7 +61,7 @@ def mrsr(X, T, norm=1, max_k=None):
         U_k = C_k.copy()
         V_k = (Y_k_hat - Y_k).T @ X
         lb = list()
-        for j in set(range(m)).difference(A):
+        for j in set(range(m)).difference(set(order)):
             u_kj = U_k[:,j]
             v_kj = V_k[:,j]
             LB = list()
@@ -67,8 +78,18 @@ def mrsr(X, T, norm=1, max_k=None):
         
         Y_k = ((1 - lb_op) * Y_k) + (lb_op * Y_k_hat)
         W_k = ((1 - lb_op) * W_k) + (lb_op * W_k_hat_)
-        
-    return W_k,list(A)
+
+        if k > n_var:
+            error_var = np.std(error[k-n_var:k])
+            if error_var < 10e-4:
+                return W_k,list(order)
+
+        error[k] = PRESS(X,T,W_k)
+
+    # min_error = np.argmin(error)
+    # W_k = W_k[:,:min_error]
+    return W_k,list(order)
+    # return W_k,list(order[:min_error])
 
 # opposite neighborhood
 def ON(X, y, neighborhood_size=1, D_in=None, D_out=None):
@@ -251,22 +272,21 @@ class w_MLM(NN_MLM):
         
 
 class OS_MLM(NN_MLM):
-    def __init__(self, max_rp_number=None):
-
-        # number of reference points
-        self.max_rp_number = max_rp_number
+    def __init__(self):
+        pass
 
     def fit(self, X, y=None):
+        self.max_rp_number = int(0.15 * X.shape[0])
         # convert outputs to one-hot encoding
         y = one_hot(y) if len(y.shape) == 1 else y
 
         self.D_in  = sp.spatial.distance.cdist(X,X)
         self.D_out  = (y * (-1)) + 1
 
-        self.B, self.rp_index = mrsr(self.D_in, self.D_out, norm=1, max_k=self.max_rp_number)
+        _, self.rp_index = mrsr(self.D_in, self.D_out, norm=1, max_k=self.max_rp_number)
         # self.B = self.B[self.B != 0]
-
-        self.B = self.B[self.rp_index,:]        
+        
+        self.B = np.linalg.pinv(self.D_in[:,self.rp_index]) @ self.D_out
 
         self.rp_X = X[self.rp_index,:]
         self.rp_y = np.eye(y.shape[1])
@@ -277,13 +297,10 @@ class OS_MLM(NN_MLM):
 
 class FCM_MLM(NN_MLM):
     def __init__(self, max_rp_number=None):
-
         # number of reference points
         self.max_rp_number = max_rp_number
 
     def fit(self, X, y=None):
-        
-
         # 
         fcm = FCM(n_clusters=self.max_rp_number)
         fcm.fit(X)
