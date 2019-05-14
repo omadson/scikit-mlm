@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/scikit-mlm.svg)](http://pypi.org/project/scikit-mlm/)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/w/omadson/scikit-mlm.svg)](https://github.com/omadson/scikit-mlm/pulse)
 [![GitHub last commit](https://img.shields.io/github/last-commit/omadson/scikit-mlm.svg)](https://github.com/omadson/scikit-mlm/commit/master)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2822613.svg)](https://doi.org/10.5281/zenodo.2822613)
 
 scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
 
@@ -75,8 +75,9 @@ if you use scikit-mlm in your paper, please cite
 @misc{scikit-mlm,
     author       = "Madson Luiz Dantas Dias",
     year         = "2019",
-    title        = "scikit-mlm: A implementation of {MLM} for scikit framework",
+    title        = "scikit-mlm: An implementation of {MLM} for scikit-learn framework",
     url          = "https://github.com/omadson/scikit-mlm",
+    doi          = "10.5281/zenodo.2822613",
     institution  = "Federal University of Cear\'{a}, Department of Computer Science" 
 }
 ```
