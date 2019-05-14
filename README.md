@@ -1,4 +1,10 @@
 # scikit-mlm
+
+![PyPI](https://img.shields.io/pypi/v/scikit-mlm.svg)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/omadson/scikit-mlm.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/omadson/scikit-mlm.svg)
+
+
 scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
 
 ## quickstart
@@ -7,7 +13,7 @@ install with:
 pip install scikit-mlm
 ```
 
-Classification example with the nearest neighbor MLM classifier:
+classification example with the nearest neighbor MLM classifier:
 ```Python
 from skmlm import NN_MLM
 from sklearn.preprocessing import MinMaxScaler
