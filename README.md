@@ -1,8 +1,8 @@
 # scikit-mlm
 
-![PyPI](https://img.shields.io/pypi/v/scikit-mlm.svg)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/w/omadson/scikit-mlm.svg)
-![GitHub last commit](https://img.shields.io/github/last-commit/omadson/scikit-mlm.svg)
+[![PyPI](https://img.shields.io/pypi/v/scikit-mlm.svg)](http://pypi.org/project/scikit-mlm/)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/w/omadson/scikit-mlm.svg)](https://github.com/omadson/scikit-mlm/pulse)
+[![GitHub last commit](https://img.shields.io/github/last-commit/omadson/scikit-mlm.svg)](https://github.com/omadson/scikit-mlm/commit/master)
 
 
 scikit-mlm is a Python module implementing the [Minimal Learning Machine][1] (MLM) machine learning technique using the [scikit-learn][2] API.
