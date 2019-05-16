@@ -12,7 +12,7 @@ def one_hot(y):
     y = [int(i) for i in y.tolist()]
     l = len(y)
     c = len(np.unique(y))
-    y_oh = np.zeros((l, c+1))
+    y_oh = np.zeros((l, c))
     y_oh[np.arange(l), y] = 1
     return y_oh
 
@@ -320,3 +320,64 @@ class FCM_MLM(NN_MLM):
         self.D_out  = (y * (-1)) + 1
 
         self.B = np.linalg.pinv(self.D_in) @ self.D_out
+
+
+class L12_MLM(NN_MLM):
+    def __init__(self, alpha=0.9, lb=0.1):
+        # number of reference points
+        self.alpha = alpha
+        self.lb    = lb
+
+    def fit(self, X, y=None):
+        # convert outputs to one-hot encoding
+        y = one_hot(y) if len(y.shape) == 1 else y
+
+        # compute distance matrices with all data as RP
+        self.rp_X  = X
+        self.D_in  = sp.spatial.distance.cdist(X,self.rp_X)
+        self.D_out = (y * (-1)) + 1
+
+
+        # descend gradient setup
+        epochs = 2000
+        eta    = 0.01
+
+        # Initialize the matrix B with values close to zero
+        B_t = 0.001 * np.random.randn(self.D_in.shape[1],self.D_out.shape[1])
+
+        e = np.zeros(epochs)
+        # descend gradient loop
+        c = 0
+        for t in range(epochs):
+            # compute the Jacobian associated with the \ell_{1/2}-regularizer
+            # BB   = np.sqrt(np.abs(B_t))
+            DB_t = (1/2) * np.multiply(np.sign(B_t),1/np.sqrt(np.abs(B_t)))
+
+            # compute the Jacobian of the loss function
+            # E   = self.D_out - self.D_in @ B_t
+            JB_t = (2 * self.D_in.T @ (self.D_out - self.D_in @ B_t)) + (self.lb * DB_t)
+
+            # Update B_t with gradient descent rule
+            B_t = B_t + eta * (JB_t)/(np.linalg.norm(JB_t,'fro'))
+            
+            # pruning phase
+            c = c + 1
+            if t >= 0.1 * epochs and c > 0.1 * epochs and t <= 0.7 * epochs:
+                c = 0
+                # compute the pruning threshold (gamma)
+                B_t_norm = np.linalg.norm(B_t,axis=1)
+                gamma = self.alpha * B_t_norm.mean()
+
+                # create the list of the less important RPs
+                no_pruning = ~(B_t_norm < gamma)
+
+                # update matrices
+                B_t = B_t[no_pruning,:]
+                self.D_in = self.D_in[:,no_pruning]
+                self.rp_X = self.rp_X[no_pruning,:]
+
+            e[t] = np.trace(E @ E.T) + self.lb * BB.sum()
+
+        self.B = B_t
+        self.rp_y = np.eye(y.shape[1])
+        return self
