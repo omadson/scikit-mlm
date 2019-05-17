@@ -345,7 +345,7 @@ class L12_MLM(NN_MLM):
         # Initialize the matrix B with values close to zero
         B_t = 0.001 * np.random.randn(self.D_in.shape[1],self.D_out.shape[1])
 
-        e = np.zeros(epochs)
+        # e = np.zeros(epochs)
         # descend gradient loop
         c = 0
         for t in range(epochs):
@@ -376,7 +376,7 @@ class L12_MLM(NN_MLM):
                 self.D_in = self.D_in[:,no_pruning]
                 self.rp_X = self.rp_X[no_pruning,:]
 
-            e[t] = np.trace(E @ E.T) + self.lb * BB.sum()
+            # e[t] = np.trace(E @ E.T) + self.lb * BB.sum()
 
         self.B = B_t
         self.rp_y = np.eye(y.shape[1])
