@@ -5,7 +5,7 @@ from scipy.spatial.distance import cdist
 from scipy.optimize import least_squares
 
 from fcmeans import FCM
-from .mrsr import MRSR
+from mrsr import MRSR
 from .utils import ON, one_hot
 
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
@@ -18,13 +18,23 @@ class MLMR(BaseEstimator, RegressorMixin):
         # number of reference points
         self.rp_number = rp_number
 
+    def fix_number(self, rp_number, N):
+        # if None, set rp_number to 10% of samples
+        rp_number = 0.1 if rp_number == None else rp_number
+        # if rp_number in [0,1], use as percentual
+        return int(np.ceil(rp_number * N)) if rp_number <= 1 else rp_number
+
+    def random_select(self, rp_number, N):
+        return np.random.choice(N, rp_number, replace=False)
+
     def fit(self, X, y=None):
         self.X = X
         self.y = y
+        
+        self.rp_number = self.fix_number(self.rp_number, X.shape[0])
+
         # random select of reference points for inputs and outputs
-        if self.rp_number == None:
-            self.rp_number = int(np.ceil(0.1 * X.shape[0]))
-        self.rp_index = np.random.choice(X.shape[0], self.rp_number, replace=False)
+        self.rp_index = self.random_select(self.rp_number, X.shape[0])
         self.rp_X     = X[self.rp_index,:]
         self.rp_y     = y[self.rp_index,:]
 
@@ -174,17 +184,19 @@ class ON_MLM(NN_MLM):
 class w_MLM(NN_MLM):
 
     def fit(self, X, y=None):
-        # convert outputs to one-hot encoding
+        # create weight matrix
         w = np.zeros(y.shape)
         labels = np.unique(y)
         for label in labels:
             w[y == label] = np.mean(y == label)
+
+        # convert outputs to one-hot encoding
         y = one_hot(y) if len(y.shape) == 1 else y
 
         # random select of reference points for inputs and outputs
-        if self.rp_number == None:
-            self.rp_number = int(np.ceil(0.1 * X.shape[0]))
-        rp_index = np.random.choice(X.shape[0], self.rp_number, replace=False)
+        N = X.shape[0]
+        self.rp_number = self.fix_number(self.rp_number,N)
+        rp_index       = self.random_select(self.rp_number,N)
         
         super().set_params(X,y,rp_index)
 
@@ -241,9 +253,10 @@ class FCM_MLM(NN_MLM):
         self.max_rp_number = max_rp_number
 
     def fit(self, X, y=None):
-        self.X = X
-        self.y = y
         # 
+        N = X.shape[0]
+        self.max_rp_number = self.fix_number(self.max_rp_number,N)
+
         fcm = FCM(n_clusters=self.max_rp_number)
         fcm.fit(X)
         c = fcm.u.argmax(axis=1)
@@ -254,10 +267,9 @@ class FCM_MLM(NN_MLM):
         # convert outputs to one-hot encoding
         y = one_hot(y) if len(y.shape) == 1 else y
 
-        
+        rp_index = cdist(fcm.centers[homongenious_clusters,:],X).argmin(axis=1)
 
-        self.rp_X  = fcm.centers[homongenious_clusters,:]
-        self.rp_y = np.eye(y.shape[1])
+        super().set_params(X,y,rp_index)
 
         self.D_in  = cdist(X,self.rp_X)
         self.D_out  = (y * (-1)) + 1
@@ -326,4 +338,38 @@ class L12_MLM(NN_MLM):
 
         self.B = B_t
         self.rp_y = np.eye(y.shape[1])
+        return self
+
+# norm 2 regularization:
+class L2_MLM(NN_MLM):
+    def __init__(self, rp_number=None, C=1):
+
+        # number of reference points
+        self.rp_number = rp_number
+        # regularization parameter
+        self.C         = C
+
+    def fit(self, X, y=None):
+        self.X = X
+        self.y = y
+        # convert outputs to one-hot encoding
+        y = one_hot(y) if len(y.shape) == 1 else y
+
+        N = X.shape[0]
+        self.rp_number = self.fix_number(self.rp_number, N)
+
+        # random select of reference points for inputs and outputs
+        self.rp_index = self.random_select(self.rp_number, N)
+        self.rp_X     = X[self.rp_index,:]
+        self.rp_y     = y[self.rp_index,:]
+
+        # compute pairwise distance matrices
+        #  - D_in: input space
+        #  - D_out: output space
+        self.D_in  = cdist(X,self.rp_X)
+        self.D_out = cdist(y,self.rp_y)
+
+        # compute the distance regression matrix using OLS
+        self.B = np.linalg.inv(self.D_in.T @ self.D_in + self.C * np.eye(self.rp_index.shape[0])) @ self.D_in.T @ self.D_out
+
         return self
