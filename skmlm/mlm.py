@@ -5,7 +5,7 @@ from scipy.spatial.distance import cdist
 from scipy.optimize import least_squares
 
 from fcmeans import FCM
-from mrsr import MRSR
+from .mrsr import MRSR
 from .utils import ON, one_hot
 
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
@@ -203,12 +203,13 @@ class w_MLM(NN_MLM):
         
 # optimally selected MLM (OS_MLM): https://doi.org/10.1007/978-3-030-03493-1_70
 class OS_MLM(NN_MLM):
-    def __init__(self, norm=1, feature_number=None,repetition_number=8,press=False,tol=10e-4):
+    def __init__(self, norm=1, feature_number=None,repetition_number=8,press=False,tol=None, pinv=False):
         self.norm              = norm
         self.feature_number    = feature_number
         self.repetition_number = repetition_number
         self.tol               = tol
         self.press             = press
+        self.pinv              = pinv
 
     def fit(self, X, y=None):
         # convert outputs to one-hot encoding
@@ -222,7 +223,7 @@ class OS_MLM(NN_MLM):
 
         self.feature_number = X.shape[0] if self.feature_number == None else self.feature_number
 
-        mrsr = MRSR(norm=self.norm, feature_number=self.feature_number,repetition_number=self.repetition_number,press=self.press,tol=self.tol)
+        mrsr = MRSR(norm=self.norm, feature_number=self.feature_number,repetition_number=self.repetition_number,press=self.press,tol=self.tol, pinv=self.pinv)
         mrsr.fit(self.D_in, self.D_out)
 
         super().set_params(X,y,mrsr.order)
