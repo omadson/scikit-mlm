@@ -21,7 +21,7 @@ setup(
         'scipy>=1.1.0',
         'scikit-learn>=0.21.0',
         'fuzzy-c-means>=0.0.3',
-        'mrsr'
+        'mrsr>=0.0.2'
     ],
     zip_safe=False,
     classifiers=[
