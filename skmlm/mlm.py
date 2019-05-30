@@ -69,11 +69,11 @@ class MLM(BaseEstimator, RegressorMixin):
         # compute pairwise distance vectors
         #  - d_in: input space
         #  - d_out: output space
-        d_in  = cdist(x[np.newaxis],self.rp_X)
-        d_out = cdist(y,self.rp_y)
+        d_x  = cdist(x[np.newaxis],self.rp_X)
+        d_y = cdist(y,self.rp_y)
 
         # compute the internal cost function
-        return (d_out**2 - (d_in @ self.B)**2)[0]
+        return (d_y**2 - (d_x @ self.B)**2)[0]
 
 # MLM for classification: https://doi.org/10.1016/j.neucom.2014.11.073
 class MLMC(MLM):
@@ -128,14 +128,14 @@ class NN_MLM(MLMC):
     def predict(self, X, y=None):
         errors.not_train(self)
         # compute matrix of distances from input RPs
-        D_in = cdist(X,self.rp_X)
+        D_x = cdist(X,self.rp_X)
         # estimate matrix of distances from output RPs
-        D_out_hat = D_in @ self.B
+        D_y_hat = D_x @ self.B
 
         if self.y_oh:
-            return self.rp_y[D_out_hat.argmin(axis=1),:]
+            return self.rp_y[D_y_hat.argmin(axis=1),:]
         else:
-            return self.rp_y[D_out_hat.argmin(axis=1),:].argmax(axis=1)
+            return self.rp_y[D_y_hat.argmin(axis=1),:].argmax(axis=1)
 
 
 # opposite neighborhood MLM (ON-MLM): https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-198.pdf
@@ -251,48 +251,41 @@ class FCM_MLM(NN_MLM):
 
 # ℓ1/2-norm regularization MLM (L12_MLM): https://doi.org/10.1109/BRACIS.2018.00043
 class L12_MLM(NN_MLM):
-    def __init__(self, alpha=0.9, lb=0.1):
+    def __init__(self, alpha=0.7, lb=0.1, epochs=2000, eta=0.01):
         # number of reference points
-        self.alpha = alpha
-        self.lb    = lb
+        self.alpha  = alpha
+        self.lb     = lb
+        self.epochs = epochs
+        self.eta    = eta
 
-    def fit(self, X, y=None):
-        self.X = X
-        self.y = y
-        # convert outputs to one-hot encoding
-        y = one_hot(y) if len(y.shape) == 1 else y
-
+    def select_RPs(self):
         # compute distance matrices with all data as RP
-        self.rp_X  = X
-        self.D_in  = cdist(X,self.rp_X)
-        self.D_out = (y * (-1)) + 1
-
-
-        # descend gradient setup
-        epochs = 2000
-        eta    = 0.01
+        rp_X = self.X
+        rp_y = self.y
+        D_x  = cdist(self.X,rp_X)
+        D_y  = (-1) * self.y + 1
 
         # Initialize the matrix B with values close to zero
-        B_t = 0.001 * np.random.randn(self.D_in.shape[1],self.D_out.shape[1])
+        B_t = 0.001 * np.random.randn(D_x.shape[1],D_y.shape[1])
 
-        # e = np.zeros(epochs)
+        # e = np.zeros(self.epochs)
         # descend gradient loop
         c = 0
-        for t in range(epochs):
+        for t in range(self.epochs):
             # compute the Jacobian associated with the \ell_{1/2}-regularizer
             # BB   = np.sqrt(np.abs(B_t))
             DB_t = (1/2) * np.multiply(np.sign(B_t),1/np.sqrt(np.abs(B_t)))
 
             # compute the Jacobian of the loss function
-            # E   = self.D_out - self.D_in @ B_t
-            JB_t = (2 * self.D_in.T @ (self.D_out - self.D_in @ B_t)) + (self.lb * DB_t)
+            # E   = D_y - D_x @ B_t
+            JB_t = (2 * D_x.T @ (D_y - D_x @ B_t)) + (self.lb * DB_t)
 
             # Update B_t with gradient descent rule
-            B_t = B_t + eta * (JB_t)/(np.linalg.norm(JB_t,'fro'))
+            B_t = B_t + self.eta * (JB_t)/(np.linalg.norm(JB_t,'fro'))
             
             # pruning phase
             c = c + 1
-            if t >= 0.1 * epochs and c > 0.1 * epochs and t <= 0.7 * epochs:
+            if t >= 0.1 * self.epochs and c > 0.1 * self.epochs and t <= 0.7 * self.epochs:
                 c = 0
                 # compute the pruning threshold (gamma)
                 B_t_norm = np.linalg.norm(B_t,axis=1)
@@ -302,15 +295,20 @@ class L12_MLM(NN_MLM):
                 no_pruning = ~(B_t_norm < gamma)
 
                 # update matrices
-                B_t = B_t[no_pruning,:]
-                self.D_in = self.D_in[:,no_pruning]
-                self.rp_X = self.rp_X[no_pruning,:]
+                B_t  = B_t[no_pruning,:]
+                D_x  = D_x[:,no_pruning]
+                rp_X = rp_X[no_pruning,:]
+                rp_y = rp_y[no_pruning,:]
 
             # e[t] = np.trace(E @ E.T) + self.lb * BB.sum()
+        self.rp_X = rp_X
+        self.rp_y = np.eye(self.y.shape[1])
+        self.D_x  = D_x
+        self.D_y  = D_y
+        self.B    = B_t
 
-        self.B = B_t
-        self.rp_y = np.eye(y.shape[1])
-        return self
+    def fit_B(self): pass
+
 
 # norm 2 regularization:
 class L2_MLM(NN_MLM):
