@@ -15,7 +15,7 @@ def pinv_(X):
 
 
 # one-hot: convert output to one-hot encoding
-def one_hot(y):    
+def one_hot(y):
     y = [int(i) for i in y.tolist()]
     l = len(y)
     c = len(np.unique(y))

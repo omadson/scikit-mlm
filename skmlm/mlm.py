@@ -50,6 +50,8 @@ class MLM(BaseEstimator, RegressorMixin):
         self.y = y
         self.select_RPs()
         self.fit_B()
+        self.X_red = 1 - self.B.shape[0] / self.X.shape[0]
+        self.y_red = 1 - self.B.shape[1] / self.y.shape[0]
         return self
 
     def predict(self, X, y=None):
@@ -184,16 +186,12 @@ class w_MLM(NN_MLM):
         
 # optimally selected MLM (OS_MLM): https://doi.org/10.1007/978-3-030-03493-1_70
 class OS_MLM(NN_MLM):
-    def __init__(self, norm=1, feature_number=None,repetition_number=8,press=False,tol=None, pinv=False):
+    def __init__(self, norm=1, feature_number=None, pinv=False):
         self.norm              = norm
         self.feature_number    = feature_number
 
-        if self.feature_number == None: self.feature_number = 0.1
+        if self.feature_number == None: self.feature_number = 0.20
 
-
-        self.repetition_number = repetition_number
-        self.tol               = tol
-        self.press             = press
         self.pinv              = pinv
 
     def select_RPs(self):
@@ -209,9 +207,6 @@ class OS_MLM(NN_MLM):
 
         mrsr = MRSR(norm=self.norm,
                     feature_number=self.feature_number,
-                    repetition_number=self.repetition_number,
-                    press=self.press,
-                    tol=self.tol,
                     pinv=self.pinv)
 
         mrsr.fit(D_x, self.D_y)
@@ -219,9 +214,10 @@ class OS_MLM(NN_MLM):
         rp_id = mrsr.order
 
         self.rp_X     = self.X[rp_id,:]
-        self.rp_y     = self.y[rp_id,:]
+        self.rp_y     = np.eye(self.y.shape[1])
 
         self.B = mrsr.W
+        self.error = mrsr.error
 
     def fit_B(self): pass
 
