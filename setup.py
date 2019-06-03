@@ -7,7 +7,7 @@ def read(filename):
 
 setup(
     name='scikit-mlm',
-    version='0.0.11',
+    version='0.1.0',
     description='Minimal Learning Machine implementation using the scikit-learn API',
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
