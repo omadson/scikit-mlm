@@ -5,7 +5,7 @@ from scipy.spatial.distance import cdist
 from scipy.optimize import least_squares
 
 from fcmeans import FCM
-from .mrsr import MRSR
+from mrsr import MRSR
 from .utils import ON, pinv_, one_hot, ERRORS
 
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin

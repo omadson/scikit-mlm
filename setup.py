@@ -20,8 +20,8 @@ setup(
         'numpy>=1.15.4',
         'scipy>=1.1.0',
         'scikit-learn>=0.21.0',
-        'fuzzy-c-means>=0.0.3',
-        'mrsr>=0.0.2'
+        'fuzzy-c-means>=0.0.5',
+        'mrsr>=0.0.3'
     ],
     zip_safe=False,
     classifiers=[
