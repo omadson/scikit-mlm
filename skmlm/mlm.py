@@ -236,8 +236,13 @@ class FCM_MLM(NN_MLM):
         c = fcm.u.argmax(axis=1)
         # homongenious_clusters
         homongenious_clusters = np.where(np.bincount(np.unique(np.vstack((c,self.y.argmax(axis=1))), axis=1)[0,:]) == 1)[0]
+        centers = fcm.centers[homongenious_clusters,:]
+        # if all clusters are heterogenious, use all clusters
+        if len(centers) == 0:
+            centers = fcm.centers
+
         # get most closest samples from centers
-        rp_id = cdist(fcm.centers[homongenious_clusters,:],self.X).argmin(axis=1)
+        rp_id = cdist(centers,self.X).argmin(axis=1)
 
         self.rp_X     = self.X[rp_id,:]
         self.rp_y     = self.y[rp_id,:]
