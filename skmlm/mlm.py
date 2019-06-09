@@ -252,12 +252,13 @@ class FCM_MLM(NN_MLM):
 
 # ℓ1/2-norm regularization MLM (L12_MLM): https://doi.org/10.1109/BRACIS.2018.00043
 class L12_MLM(NN_MLM):
-    def __init__(self, alpha=0.7, lb=0.1, epochs=2000, eta=0.01):
+    def __init__(self, alpha=0.7, lb=0.1, epochs=2000, eta=0.01, rp_min=0.05):
         # number of reference points
         self.alpha  = alpha
         self.lb     = lb
         self.epochs = epochs
         self.eta    = eta
+        self.rp_min = rp_min
 
     def select_RPs(self):
         # compute distance matrices with all data as RP
@@ -266,12 +267,18 @@ class L12_MLM(NN_MLM):
         D_x  = cdist(self.X,rp_X)
         D_y  = (-1) * self.y + 1
 
+        # compute the minimun number of input reference points
+        N = self.X.shape[0]
+        if self.rp_min <= 1:    self.rp_min = int(self.rp_min * N)
+        if self.rp_min > N:     self.rp_min = N
+
         # Initialize the matrix B with values close to zero
         B_t = 0.001 * np.random.randn(D_x.shape[1],D_y.shape[1])
 
         # e = np.zeros(self.epochs)
         # descend gradient loop
         c = 0
+        t = 0
         for t in range(self.epochs):
             # compute the Jacobian associated with the \ell_{1/2}-regularizer
             # BB   = np.sqrt(np.abs(B_t))
@@ -285,15 +292,23 @@ class L12_MLM(NN_MLM):
             B_t = B_t + self.eta * (JB_t)/(np.linalg.norm(JB_t,'fro'))
             
             # pruning phase
-            c = c + 1
+            c += 1
             if t >= 0.1 * self.epochs and c > 0.1 * self.epochs and t <= 0.7 * self.epochs:
                 c = 0
                 # compute the pruning threshold (gamma)
                 B_t_norm = np.linalg.norm(B_t,axis=1)
-                gamma = self.alpha * B_t_norm.mean()
-
+                B_t_norm_mean = B_t_norm.mean()
+                gamma = self.alpha * B_t_norm_mean
                 # create the list of the less important RPs
                 no_pruning = ~(B_t_norm < gamma)
+                # check whether the number of remaining reference points exceeds the minimum number
+                while (B_t[no_pruning,:].shape[0] < self.rp_min):
+                    # update alpha to a new tiny value 
+                    self.alpha = 0.5 * self.alpha
+                    # compute the new pruning threshold (gamma)
+                    gamma      = self.alpha * B_t_norm_mean
+                    # create the new list of the less important RPs
+                    no_pruning = ~(B_t_norm < gamma)
 
                 # update matrices
                 B_t  = B_t[no_pruning,:]
