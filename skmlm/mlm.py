@@ -252,13 +252,13 @@ class FCM_MLM(NN_MLM):
 
 # ℓ1/2-norm regularization MLM (L12_MLM): https://doi.org/10.1109/BRACIS.2018.00043
 class L12_MLM(NN_MLM):
-    def __init__(self, alpha=0.7, lb=0.1, epochs=2000, eta=0.01, rp_min=0.05):
+    def __init__(self, alpha=0.7, lb=0.1, epochs=2000, eta=0.01, rp_min_size=0.05):
         # number of reference points
         self.alpha  = alpha
         self.lb     = lb
         self.epochs = epochs
         self.eta    = eta
-        self.rp_min = rp_min
+        self.rp_min_size = rp_min_size
 
     def select_RPs(self):
         # compute distance matrices with all data as RP
@@ -269,8 +269,8 @@ class L12_MLM(NN_MLM):
 
         # compute the minimun number of input reference points
         N = self.X.shape[0]
-        if self.rp_min <= 1:    self.rp_min = int(self.rp_min * N)
-        if self.rp_min > N:     self.rp_min = N
+        if self.rp_min_size <= 1:    self.rp_min_size = int(self.rp_min_size * N)
+        if self.rp_min_size > N:     self.rp_min_size = N
 
         # Initialize the matrix B with values close to zero
         B_t = 0.001 * np.random.randn(D_x.shape[1],D_y.shape[1])
@@ -302,7 +302,7 @@ class L12_MLM(NN_MLM):
                 # create the list of the less important RPs
                 no_pruning = ~(B_t_norm < gamma)
                 # check whether the number of remaining reference points exceeds the minimum number
-                while (B_t[no_pruning,:].shape[0] < self.rp_min):
+                while (B_t[no_pruning,:].shape[0] < self.rp_min_size):
                     # update alpha to a new tiny value 
                     self.alpha = 0.5 * self.alpha
                     # compute the new pruning threshold (gamma)
