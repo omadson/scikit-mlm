@@ -16,7 +16,9 @@ errors = ERRORS()
 
 # MLM for regression (MLM): https://doi.org/10.1016/j.neucom.2014.11.073
 class MLM(BaseEstimator, RegressorMixin):
-    def __init__(self, rp_number=None):
+    def __init__(self, rp_number=None, random_state=42):
+        # random state
+        self.random_state = random_state
         # number of reference points
         self.rp_number = rp_number
         #    if None, set rp_number to 10% of samples,
@@ -34,7 +36,8 @@ class MLM(BaseEstimator, RegressorMixin):
         if self.rp_number == N:
             rp_id     = np.arange(N)
         else:
-            rp_id     = np.random.choice(N, self.rp_number, replace=False)
+            r = np.random.RandomState(self.random_state)
+            rp_id     = r.choice(N, self.rp_number, replace=False)
 
         self.rp_X     = self.X[rp_id,:]
         self.rp_y     = self.y[rp_id,:]
@@ -224,14 +227,11 @@ class OS_MLM(NN_MLM):
 # fuzzy C-means MLM (FCM_MLM): https://doi.org/10.1007/978-3-319-95312-0_34
 class FCM_MLM(NN_MLM):
     def select_RPs(self):
-        # random selection
-        #    if <rp_number> equals to <N> use all points of RPs,
-        #    else, select <rp_number> points at random.
         N = self.X.shape[0]
 
         if self.rp_number <= 1:    self.rp_number = int(self.rp_number * N)
 
-        fcm = FCM(n_clusters=self.rp_number)
+        fcm = FCM(n_clusters=self.rp_number, random_state=self.random_state)
         fcm.fit(self.X)
         c = fcm.u.argmax(axis=1)
         # homongenious_clusters
@@ -252,13 +252,14 @@ class FCM_MLM(NN_MLM):
 
 # ℓ1/2-norm regularization MLM (L12_MLM): https://doi.org/10.1109/BRACIS.2018.00043
 class L12_MLM(NN_MLM):
-    def __init__(self, alpha=0.7, lb=0.1, epochs=2000, eta=0.01, rp_min_size=0.05):
+    def __init__(self, alpha=0.7, lb=0.1, epochs=2000, eta=0.01, rp_min_size=0.05, random_state=42):
         # number of reference points
         self.alpha  = alpha
         self.lb     = lb
         self.epochs = epochs
         self.eta    = eta
         self.rp_min_size = rp_min_size
+        self.random_state = random_state
 
     def select_RPs(self):
         # compute distance matrices with all data as RP
@@ -273,7 +274,9 @@ class L12_MLM(NN_MLM):
         if self.rp_min_size > N:     self.rp_min_size = N
 
         # Initialize the matrix B with values close to zero
-        B_t = 0.001 * np.random.randn(D_x.shape[1],D_y.shape[1])
+        r = np.random.RandomState(self.random_state)
+        B_t = r.normal(0,0.001, (D_x.shape[1],D_y.shape[1]))
+        # B_t = 0.001 * np.random.randn(D_x.shape[1],D_y.shape[1])
 
         # e = np.zeros(self.epochs)
         # descend gradient loop
