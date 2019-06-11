@@ -80,6 +80,21 @@ class MLM(BaseEstimator, RegressorMixin):
         # compute the internal cost function
         return (d_y**2 - (d_x @ self.B)**2)[0]
 
+    def plot(self,plt,X=None, y=None, figsize=None):
+        X = X if X != None else self.X
+        y = y if y != None else self.y
+
+        X_ = np.linspace(X.min(), X.max(), 300)[np.newaxis].T
+        y_ = self.predict(X_)
+
+        if X.shape[1] == 1:
+            fig = plt.figure(figsize=figsize) if figsize != None else plt.figure()
+            plt.scatter(X,y, marker='o', c='orange')
+            plt.scatter(self.rp_X[:,0],self.rp_y[:,0],alpha=0.9, facecolors='none',edgecolors='black',s=60,linewidths=2)
+            plt.plot(X_, y_, c='black')
+        else:
+            print("X have more that one dimensions.")
+
 # nearest neighbor MLM (NN-MLM): https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9
 class C_MLM(MLM):
     def predict(self, X, y=None):
