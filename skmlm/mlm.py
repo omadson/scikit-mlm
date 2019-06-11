@@ -58,7 +58,7 @@ class MLM(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, X, y=None):
-        erros.not_train()
+        errors.not_train(self)
         return np.array([self.get_output(x)[0] for x in X])
 
     def get_output(self, x):
@@ -79,6 +79,39 @@ class MLM(BaseEstimator, RegressorMixin):
 
         # compute the internal cost function
         return (d_y**2 - (d_x @ self.B)**2)[0]
+
+# nearest neighbor MLM (NN-MLM): https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9
+class C_MLM(MLM):
+    def predict(self, X, y=None):
+        errors.not_train(self)
+        # compute matrix of distances from input RPs
+        D_x = cdist(X,self.rp_X)
+        # estimate matrix of distances from output RPs
+        D_y_hat = D_x @ self.B
+
+        
+        a_i = self.rp_y.shape[0]
+        b_i = -3 * self.rp_y.sum()
+
+        RP_y = np.repeat(self.rp_y,X.shape[0],axis=1).T
+
+        c = np.sum(3*RP_y**2 - D_y_hat**2, axis=1)
+        d = np.sum(RP_y * D_y_hat**2 -  RP_y**3, axis=1)
+
+        return np.array([self.roots_verify(np.roots([a_i, b_i,c[i], d[i]])) for i in range(len(d))])
+    
+    def roots_verify(self, roots):
+        real_roots = []
+        for root in roots:
+            if np.isreal(root):
+                real_roots.append(np.real(root))
+        if len(real_roots) == 1:
+            return real_roots[0]
+        else:
+            v = []
+            for real_root in real_roots:
+                v.append(np.sum((real_root - self.rp_y.T)**2 - cdist([[real_root]],self.rp_y)**2))
+            return real_roots[np.array(v).argmin()]
 
 # MLM for classification: https://doi.org/10.1016/j.neucom.2014.11.073
 class MLMC(MLM):

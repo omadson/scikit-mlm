@@ -65,14 +65,14 @@ to make a contribution, just fork this repository, push the changes in your fork
  - [optimally selected MLM (OS_MLM)](https://doi.org/10.1007/978-3-030-03493-1_70)
  - [&ell;<sub>1/2</sub>-norm regularization MLM (L12_MLM)](https://doi.org/10.1109/BRACIS.2018.00043)
  - [weighted MLM (w_MLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
- - [ranking MLM (R-MLM)](https://doi.org/10.1109/BRACIS.2015.39) (WIP)
+ - [ranking MLM (R_MLM)](https://doi.org/10.1109/BRACIS.2015.39) (WIP)
+ - [cubic equation MLM (C_MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10) (WIP)
 
 
 
 ## future improvements
 
 list of methods that will be implemented in the next releases:
- - [cubic equation MLM (C-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10)
  - [expected squared distance MLM (ESD-MLM)](https://doi.org/10.1007/978-3-319-26532-2_62)
  - [voting based MLM (V-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec11)
  - [weighted voting based MLM (WV-MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec11)
