@@ -66,7 +66,7 @@ to make a contribution, just fork this repository, push the changes in your fork
  - [&ell;<sub>1/2</sub>-norm regularization MLM (L12_MLM)](https://doi.org/10.1109/BRACIS.2018.00043)
  - [weighted MLM (w_MLM)](https://doi.org/10.1007/978-3-319-26532-2_61)
  - [ranking MLM (R_MLM)](https://doi.org/10.1109/BRACIS.2015.39) (WIP)
- - [cubic equation MLM (C_MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10) (WIP)
+ - [cubic equation MLM (C_MLM)](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10)
 
 
 

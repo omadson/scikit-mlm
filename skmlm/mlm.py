@@ -95,7 +95,7 @@ class MLM(BaseEstimator, RegressorMixin):
         else:
             print("X have more that one dimensions.")
 
-# nearest neighbor MLM (NN-MLM): https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9
+# cubic equation MLM (C_MLM): https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec10
 class C_MLM(MLM):
     def predict(self, X, y=None):
         errors.not_train(self)
@@ -385,4 +385,63 @@ class L2_MLM(NN_MLM):
         self.C         = C
     def fit_B(self):
         # compute the distance regression matrix using OLS
+
         self.B = np.linalg.inv(self.D_x.T @ self.D_x + self.C * np.eye(self.rp_X.shape[0])) @ self.D_x.T @ self.D_y
+
+
+class OS_MLMR(C_MLM):
+    def __init__(self, norm=1, feature_number=None, pinv=False):
+        self.norm              = norm
+        self.feature_number    = feature_number
+
+        if self.feature_number == None: self.feature_number = 0.20
+
+        self.pinv              = pinv
+    def select_RPs(self):
+        # convert outputs to one-hot encoding
+        # self.y = self.oh_convert(self.y)
+        # compute pairwise distance matrices
+        #  - D_x: input space
+        #  - D_y: output space
+        D_x  = cdist(self.X,self.X)
+        
+        rp_id     = np.random.choice(self.X.shape[0], int(self.X.shape[0]/50), replace=False)
+
+        self.D_y  = cdist(self.y, self.y[rp_id,:])
+        # self.D_y  = cdist(self.y, self.y)
+
+
+        if self.feature_number <= 1:    self.feature_number = int(self.feature_number * self.X.shape[0])
+
+        mrsr = MRSR(norm=self.norm,
+                    feature_number=self.feature_number,
+                    pinv=self.pinv)
+
+        mrsr.fit(D_x, self.D_y)
+
+        self.X_rp_id = mrsr.order
+
+        self.rp_X     = self.X[self.X_rp_id,:]
+        # self.rp_y     = self.y
+        self.rp_y     = self.y[rp_id,:]
+
+        # self.B = mrsr.W
+        self.error = mrsr.error
+        self.D_x = D_x[:,self.X_rp_id]
+
+    # def fit_B(self): pass
+
+    def plot(self,plt,X=None, y=None, figsize=None):
+        X = X if X != None else self.X
+        y = y if y != None else self.y
+
+        X_ = np.linspace(X.min(), X.max(), 300)[np.newaxis].T
+        y_ = self.predict(X_)
+
+        if X.shape[1] == 1:
+            fig = plt.figure(figsize=figsize) if figsize != None else plt.figure()
+            plt.scatter(X,y, marker='o', c='orange')
+            plt.scatter(self.X[self.X_rp_id,0],self.y[self.X_rp_id,0],alpha=0.9, facecolors='none',edgecolors='black',s=60,linewidths=2)
+            plt.plot(X_, y_, c='black')
+        else:
+            print("X have more that one dimensions.")
