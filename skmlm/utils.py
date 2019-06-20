@@ -1,11 +1,45 @@
+import itertools
 import numpy as np
 from scipy.spatial.distance import cdist
+import pandas as pd
+from sklearn.utils import shuffle
+
 # UTILS functions used in some codes
 
 # def compute_reduction
 
 # red = lambda a: a.named_steps['gridsearchcv'].best_estimator_.B.shape[0] / a.named_steps['gridsearchcv'].best_estimator_.X.shape[0]
 
+def get_metrics(dataset_name, model_name, scores):
+    param_keys = list(scores['estimator'][0].named_steps['gridsearchcv'].best_params_.keys())
+    params = dict()
+    for param_key in param_keys: params[param_key] = list()
+    best_params = [scores['estimator'][i].named_steps['gridsearchcv'].best_params_ for i in range(len(scores['estimator']))]
+    for best_param in best_params:
+        for parameter in best_param.keys():
+            params[parameter].append(best_param[parameter])
+    params['fit_time']      = scores['fit_time']
+    params['score_time']    = scores['score_time']
+    params['test_accuracy'] = scores['test_accuracy']
+    # params['dataset_name']  = [dataset_name] * len(params['fit_time'])
+    # params['model']         = [model_name] * len(params['fit_time'])
+
+    # datasets = [dataset_name] * len(params['fit_time'])
+
+    header_ = list(params.keys())
+
+    header  = [i for i in itertools.product([dataset_name],[model_name],header_)]
+    ordered_header = [k for i,j,k in header]
+    return pd.DataFrame(pd.DataFrame(params)[ordered_header].values, columns=pd.MultiIndex.from_tuples(header))
+
+def load_dataset(url=None, task='classification',type="artificial", name="two_squares", perm=True, random_state=42):
+    url = 'https://raw.githubusercontent.com/omadson/datasets/master' if url == None else url
+    data = pd.read_csv('%s/%s/%s/%s/data.csv' % (url, task, type, name), header=None)
+    dataset      = dict()
+    if perm:
+        return shuffle(data.iloc[:,:-1].values,data.iloc[:,-1].values, random_state=random_state)
+    else:
+        return data.iloc[:,:-1].values,data.iloc[:,-1].values
 
 def pinv_(X):
     try:

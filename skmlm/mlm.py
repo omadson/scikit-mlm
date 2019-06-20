@@ -445,3 +445,55 @@ class OS_MLMR(C_MLM):
             plt.plot(X_, y_, c='black')
         else:
             print("X have more that one dimensions.")
+
+
+
+    # norm 2 regularization:
+class ELM(BaseEstimator, ClassifierMixin):
+    def __init__(self, n_hidden=20, activation_func='sigmoid', random_state=42):
+        self.n_hidden        = n_hidden
+        self.activation_func = activation_func
+        self.random_state    = random_state
+
+    def oh_convert(self, y):
+        self.y_oh = False if len(y.shape) == 1 else True
+        if self.y_oh == False: y = one_hot(y)
+        return y
+
+    def fit(self, X, y):
+        self.X = X
+        self.y = self.oh_convert(y)
+
+        # Initialize the matrix B with values close to zero
+        r = np.random.RandomState(self.random_state)
+        self.W = r.normal(0,1, (X.shape[1], self.n_hidden))
+        H = 1. / (1. + np.exp(-(X @ self.W)))
+        self.M = np.linalg.pinv(H) @ self.y
+
+    def predict(self, X, y=None):
+        H_hat = 1. / (1. + np.exp(-(X @ self.W)))
+        y_hat = H_hat @ self.M
+
+        if self.y_oh:
+            return np.sign(y_hat)
+        else:
+            return y_hat.argmax(axis=1)
+
+
+class OPELM(ELM):
+    def fit(self, X, y):
+        self.X = X
+        self.y = self.oh_convert(y)
+
+        # Initialize the matrix B with values close to zero
+        r = np.random.RandomState(self.random_state)
+        self.W = r.normal(0,1, (X.shape[1], self.n_hidden))
+        H = 1. / (1. + np.exp(-(X @ self.W)))
+
+
+        mrsr = MRSR(norm=1,feature_number=self.n_hidden-1)
+
+        mrsr.fit(H, self.y)
+
+        self.M = mrsr.W
+        self.W = self.W[:,mrsr.order]
