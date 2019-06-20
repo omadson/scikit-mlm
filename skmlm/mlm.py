@@ -449,7 +449,7 @@ class OS_MLMR(C_MLM):
 
 
     # norm 2 regularization:
-class ELM(BaseEstimator, ClassifierMixin):
+class ELM(BaseEstimator, RegressorMixin):
     def __init__(self, n_hidden=20, activation_func='sigmoid', random_state=42):
         self.n_hidden        = n_hidden
         self.activation_func = activation_func
