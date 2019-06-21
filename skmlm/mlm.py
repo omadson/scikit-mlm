@@ -279,7 +279,7 @@ class FCM_MLM(NN_MLM):
 
         if self.rp_number <= 1:    self.rp_number = int(self.rp_number * N)
 
-        fcm = FCM(n_clusters=self.rp_number, random_state=self.random_state)
+        fcm = FCM(n_clusters=self.rp_number, random_state=self.random_state, max_iter=50)
         fcm.fit(self.X)
         c = fcm.u.argmax(axis=1)
         # homongenious_clusters
@@ -379,10 +379,10 @@ class L12_MLM(NN_MLM):
 
 # norm 2 regularization:
 class L2_MLM(NN_MLM):
-    def __init__(self, rp_number=None, C=1):
+    def __init__(self, rp_number=None, C=1, random_state=42):
         # number of RPs and the regularization parameter
-        self.rp_number = rp_number
         self.C         = C
+        super().__init__(rp_number=rp_number, random_state=42)
     def fit_B(self):
         # compute the distance regression matrix using OLS
 
