@@ -55,6 +55,9 @@ class MLM(BaseEstimator, RegressorMixin):
         self.fit_B()
         self.X_red = 1 - self.B.shape[0] / self.X.shape[0]
         self.y_red = 1 - self.B.shape[1] / self.y.shape[0]
+        delattr(self, 'X')
+        delattr(self, 'y')
+        delattr(self, 'D_x')
         return self
 
     def predict(self, X, y=None):
