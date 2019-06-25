@@ -29,29 +29,34 @@ def get_metrics(dataset_name, model_name, scores):
     ordered_header = [k for i,j,k in header]
     return pd.DataFrame(pd.DataFrame(params)[ordered_header].values, columns=pd.MultiIndex.from_tuples(header))
 
-
-def get_metrics_MLM_gs(dataset_name, model_name, scores):
-    param_keys = list(scores['estimator'][0].named_steps['gridsearchcv'].best_estimator_.get_params().keys())
+def get_metrics_MLM_gs(dataset_name, model_name, scores, model):
     params = dict()
-    for param_key in param_keys: params[param_key] = list()
-    best_params = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_.get_params() for i in range(len(scores['estimator']))]
+    if model.__str__().startswith('OS_MLM'):
+        param_keys = list(scores['estimator'][0].named_steps['os_mlm'].get_params().keys())
+        for param_key in param_keys: params[param_key] = list()
+        best_params = [scores['estimator'][i].named_steps['os_mlm'].get_params() for i in range(len(scores['estimator']))]
+        params['best_estimator'] = [scores['estimator'][i].named_steps['os_mlm'] for i in range(len(scores['estimator']))]
+        params['irp_number'] = [scores['estimator'][i].named_steps['os_mlm'].B.shape[0] for i in range(len(scores['estimator']))]
+    else:
+        param_keys = list(scores['estimator'][0].named_steps['gridsearchcv'].best_estimator_.get_params().keys())
+        params = dict()
+        for param_key in param_keys: params[param_key] = list()
+        best_params = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_.get_params() for i in range(len(scores['estimator']))]
+        params['best_estimator'] = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_ for i in range(len(scores['estimator']))]
+        params['irp_number'] = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_.B.shape[0] for i in range(len(scores['estimator']))]
     for best_param in best_params:
         for parameter in best_param.keys():
             params[parameter].append(best_param[parameter])
+    
+
+    
+    
+
     params['fit_time']      = scores['fit_time']
     params['score_time']    = scores['score_time']
     params['test_accuracy'] = scores['test_accuracy']
 
-    params['irp_number'] = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_.B.shape[0] for i in range(len(scores['estimator']))]
-    params['best_estimator'] = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_ for i in range(len(scores['estimator']))]
-
-    # params['dataset_name']  = [dataset_name] * len(params['fit_time'])
-    # params['model']         = [model_name] * len(params['fit_time'])
-
-    # datasets = [dataset_name] * len(params['fit_time'])
-
     header_ = list(params.keys())
-
     header  = [i for i in itertools.product([dataset_name],[model_name],header_)]
     ordered_header = [k for i,j,k in header]
     return pd.DataFrame(pd.DataFrame(params)[ordered_header].values, columns=pd.MultiIndex.from_tuples(header))

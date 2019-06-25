@@ -254,7 +254,7 @@ class OS_MLM(NN_MLM):
         # compute pairwise distance matrices
         #  - D_x: input space
         #  - D_y: output space
-        D_x  = cdist(self.X,self.X)
+        self.D_x  = cdist(self.X,self.X)
         self.D_y  = (self.y * (-1)) + 1
 
         if self.feature_number <= 1:    self.feature_number = int(self.feature_number * self.X.shape[0])
@@ -263,7 +263,7 @@ class OS_MLM(NN_MLM):
                     feature_number=self.feature_number,
                     pinv=self.pinv)
 
-        mrsr.fit(D_x, self.D_y)
+        mrsr.fit(self.D_x, self.D_y)
 
         rp_id = mrsr.order
 
