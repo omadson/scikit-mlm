@@ -29,21 +29,26 @@ def get_metrics(dataset_name, model_name, scores):
     ordered_header = [k for i,j,k in header]
     return pd.DataFrame(pd.DataFrame(params)[ordered_header].values, columns=pd.MultiIndex.from_tuples(header))
 
-def get_metrics_MLM_gs(dataset_name, model_name, scores, model):
+def get_metrics_MLM_gs(dataset_name, model_name, scores):
     params = dict()
-    if model.__str__().startswith('OS_MLM'):
-        param_keys = list(scores['estimator'][0].named_steps['os_mlm'].get_params().keys())
-        for param_key in param_keys: params[param_key] = list()
-        best_params = [scores['estimator'][i].named_steps['os_mlm'].get_params() for i in range(len(scores['estimator']))]
-        params['best_estimator'] = [scores['estimator'][i].named_steps['os_mlm'] for i in range(len(scores['estimator']))]
-        params['irp_number'] = [scores['estimator'][i].named_steps['os_mlm'].B.shape[0] for i in range(len(scores['estimator']))]
-    else:
+    e_name = list(filter(lambda x: x in ['opelm','os_mlm', 'nn_mlm', 'gridsearchcv'], scores['estimator'][0].named_steps.keys()))[0]
+    if e_name == 'gridsearchcv':
         param_keys = list(scores['estimator'][0].named_steps['gridsearchcv'].best_estimator_.get_params().keys())
-        params = dict()
-        for param_key in param_keys: params[param_key] = list()
-        best_params = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_.get_params() for i in range(len(scores['estimator']))]
         params['best_estimator'] = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_ for i in range(len(scores['estimator']))]
-        params['irp_number'] = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_.B.shape[0] for i in range(len(scores['estimator']))]
+        params['irp_number'] = [e.B.shape[0] for e in params['best_estimator']]
+    elif e_name in ['os_mlm','nn_mlm']:
+        param_keys = list(scores['estimator'][0].named_steps[e_name].get_params().keys())
+        params['best_estimator'] = [scores['estimator'][i].named_steps[e_name] for i in range(len(scores['estimator']))]
+        params['irp_number'] = [e.B.shape[0] for e in params['best_estimator']]
+    elif e_name == 'opelm':
+        param_keys = list(scores['estimator'][0].named_steps[e_name].get_params().keys())
+        params['best_estimator'] = [scores['estimator'][i].named_steps[e_name] for i in range(len(scores['estimator']))]
+        params['n_hidden_f'] = [e.W.shape[1] for e in params['best_estimator']]
+
+    for param_key in param_keys: params[param_key] = list()
+    best_params = [e.get_params() for e in params['best_estimator']]
+    
+
     for best_param in best_params:
         for parameter in best_param.keys():
             params[parameter].append(best_param[parameter])
