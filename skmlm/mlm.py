@@ -10,8 +10,8 @@ from .utils import ON, pinv_, one_hot, ERRORS
 
 from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
 from sklearn.preprocessing import LabelBinarizer
-
-
+from scipy.ndimage.filters import gaussian_filter1d
+from scipy.stats import mode
 errors = ERRORS()
 
 # MLM for regression (MLM): https://doi.org/10.1016/j.neucom.2014.11.073
@@ -61,7 +61,6 @@ class MLM(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, X, y=None):
-        errors.not_train(self)
         return np.array([self.get_output(x)[0] for x in X])
 
     def get_output(self, x):
@@ -78,14 +77,15 @@ class MLM(BaseEstimator, RegressorMixin):
         #  - d_in: input space
         #  - d_out: output space
         d_x  = cdist(x[np.newaxis],self.rp_X)
-        d_y = cdist(y,self.rp_y)
+        d_y  = cdist(y,self.rp_y)
 
         # compute the internal cost function
+        # print(((d_y**2 - (d_x @ self.B)**2) / np.abs(d_y))[0])
         return (d_y**2 - (d_x @ self.B)**2)[0]
 
     def plot(self,plt,X=None, y=None, figsize=None):
-        X = X if X != None else self.X
-        y = y if y != None else self.y
+        # X = X if X != None else self.X
+        # y = y if y != None else self.y
 
         X_ = np.linspace(X.min(), X.max(), 300)[np.newaxis].T
         y_ = self.predict(X_)
@@ -240,13 +240,13 @@ class w_MLM(NN_MLM):
         
 # optimally selected MLM (OS_MLM): https://doi.org/10.1007/978-3-030-03493-1_70
 class OS_MLM(NN_MLM):
-    def __init__(self, norm=1, feature_number=None, pinv=False):
-        self.norm              = norm
-        self.feature_number    = feature_number
-
-        if self.feature_number == None: self.feature_number = 0.20
-
+    def __init__(self, norm=1, max_feature_number=None, pinv=False):
+        self.norm               = norm
+        self.max_feature_number = max_feature_number
         self.pinv              = pinv
+        
+        if self.max_feature_number == None: self.max_feature_number = 0.20
+        
 
     def select_RPs(self):
         # convert outputs to one-hot encoding
@@ -257,10 +257,10 @@ class OS_MLM(NN_MLM):
         self.D_x  = cdist(self.X,self.X)
         self.D_y  = (self.y * (-1)) + 1
 
-        if self.feature_number <= 1:    self.feature_number = int(self.feature_number * self.X.shape[0])
+        if self.max_feature_number <= 1:    self.max_feature_number = int(self.max_feature_number * self.X.shape[0])
 
         mrsr = MRSR(norm=self.norm,
-                    feature_number=self.feature_number,
+                    max_feature_number=self.max_feature_number,
                     pinv=self.pinv)
 
         mrsr.fit(self.D_x, self.D_y)
@@ -393,13 +393,16 @@ class L2_MLM(NN_MLM):
 
 
 class OS_MLMR(C_MLM):
-    def __init__(self, norm=1, feature_number=None, pinv=False):
-        self.norm              = norm
-        self.feature_number    = feature_number
+    def __init__(self, norm=1, max_feature_number=None, feature_number=None, pinv=False,pp=True):
+        self.norm               = norm
+        self.feature_number     = feature_number
+        self.max_feature_number = max_feature_number
+        self.pinv               = pinv
+        self.pp                 = pp
 
-        if self.feature_number == None: self.feature_number = 0.20
+        if self.max_feature_number == None: self.max_feature_number = 0.20
 
-        self.pinv              = pinv
+        
     def select_RPs(self):
         # convert outputs to one-hot encoding
         # self.y = self.oh_convert(self.y)
@@ -408,15 +411,17 @@ class OS_MLMR(C_MLM):
         #  - D_y: output space
         D_x  = cdist(self.X,self.X)
         
-        rp_id     = np.random.choice(self.X.shape[0], int(self.X.shape[0]/50), replace=False)
+        rp_id     = np.random.choice(self.X.shape[0],3, replace=False)
 
-        self.D_y  = cdist(self.y, self.y[rp_id,:])
-        # self.D_y  = cdist(self.y, self.y)
+        # self.D_y  = cdist(self.y, self.y[rp_id,:])
+        self.D_y  = cdist(self.y, self.y)
 
 
-        if self.feature_number <= 1:    self.feature_number = int(self.feature_number * self.X.shape[0])
+        if self.max_feature_number <= 1: self.max_feature_number = int(self.max_feature_number * self.X.shape[0])
+        if self.feature_number <= 1:     self.feature_number     = int(self.feature_number * self.X.shape[0])
 
         mrsr = MRSR(norm=self.norm,
+                    max_feature_number=self.max_feature_number,
                     feature_number=self.feature_number,
                     pinv=self.pinv)
 
@@ -425,8 +430,8 @@ class OS_MLMR(C_MLM):
         self.X_rp_id = mrsr.order
 
         self.rp_X     = self.X[self.X_rp_id,:]
-        # self.rp_y     = self.y
-        self.rp_y     = self.y[rp_id,:]
+        self.rp_y     = self.y
+        # self.rp_y     = self.y[rp_id,:]
 
         # self.B = mrsr.W
         self.error = mrsr.error
@@ -434,17 +439,40 @@ class OS_MLMR(C_MLM):
 
     # def fit_B(self): pass
 
-    def plot(self,plt,X=None, y=None, figsize=None):
-        X = X if X != None else self.X
-        y = y if y != None else self.y
+    def __predict__(self, X, y=None):
+        errors.not_train(self)
+        # compute matrix of distances from input RPs
+        D_x = cdist(X,self.rp_X)
+        # estimate matrix of distances from output RPs
+        D_y_hat = D_x @ self.B
 
-        X_ = np.linspace(X.min(), X.max(), 300)[np.newaxis].T
+        y_hat = np.linalg.pinv(self.rp_y) @ D_y_hat.T
+        
+        return -y_hat.T
+
+    def predict(self, X, pp):
+        if pp == True:
+            errors.not_train(self)
+            y_hat_ = self.__predict__(self.rp_X)
+            y_real = self.rp_y[self.X_rp_id,:]
+            bias = (y_real - y_hat_).mean()
+            return bias + self.__predict__(X)
+        else:
+            return super().predict(X)
+
+
+    def plot(self,plt,X=None, y=None, figsize=None):
+        # X = X if X != None else self.X
+        # y = y if y != None else self.y
+
+        X_ = np.linspace(X.min(), X.max(), 200)[np.newaxis].T
         y_ = self.predict(X_)
 
         if X.shape[1] == 1:
             fig = plt.figure(figsize=figsize) if figsize != None else plt.figure()
             plt.scatter(X,y, marker='o', c='orange')
-            plt.scatter(self.X[self.X_rp_id,0],self.y[self.X_rp_id,0],alpha=0.9, facecolors='none',edgecolors='black',s=60,linewidths=2)
+            plt.scatter(X[self.X_rp_id,0],y[self.X_rp_id,0],alpha=0.9, facecolors='none',edgecolors='black',s=60,linewidths=2)
+            y__ = gaussian_filter1d(y_, sigma=2)
             plt.plot(X_, y_, c='black')
         else:
             print("X have more that one dimensions.")
@@ -494,7 +522,7 @@ class OPELM(ELM):
         H = 1. / (1. + np.exp(-(X @ self.W)))
 
 
-        mrsr = MRSR(norm=1,feature_number=self.n_hidden-1)
+        mrsr = MRSR(norm=1,max_feature_number=self.n_hidden-1)
 
         mrsr.fit(H, self.y)
 

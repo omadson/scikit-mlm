@@ -9,6 +9,7 @@ from sklearn.utils import shuffle
 # def compute_reduction
 
 # red = lambda a: a.named_steps['gridsearchcv'].best_estimator_.B.shape[0] / a.named_steps['gridsearchcv'].best_estimator_.X.shape[0]
+
 def get_metrics(dataset_name, model_name, scores):
     param_keys = list(scores['estimator'][0].named_steps['gridsearchcv'].best_estimator_.get_params().keys())
     params = dict()
