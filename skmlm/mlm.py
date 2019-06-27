@@ -81,7 +81,7 @@ class MLM(BaseEstimator, RegressorMixin):
 
         # compute the internal cost function
         # print(((d_y**2 - (d_x @ self.B)**2) / np.abs(d_y))[0])
-        return (d_y**2 - (d_x @ self.B)**2)[0]
+        return ((d_y**2 - (d_x @ self.B)**2)**2)[0]
 
     def plot(self,plt,X=None, y=None, figsize=None):
         # X = X if X != None else self.X
@@ -435,8 +435,7 @@ class OS_MLMR(C_MLM):
 
         self.error = mrsr.error
         self.D_x = D_x[:,self.X_rp_id]
-
-
+    
     def fit_B(self):
         self.B = pinv_(self.D_x) @ self.D_y
         self.rp_y_pi = np.linalg.pinv(self.rp_y)
@@ -461,7 +460,7 @@ class OS_MLMR(C_MLM):
         # X = X if X != None else self.X
         # y = y if y != None else self.y
 
-        X_ = np.linspace(X.min(), X.max(), 200)[np.newaxis].T
+        X_ = np.linspace(X.min(), X.max(), 100)[np.newaxis].T
         y_ = self.predict(X_)
 
         if X.shape[1] == 1:
