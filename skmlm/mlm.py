@@ -433,32 +433,28 @@ class OS_MLMR(C_MLM):
         self.rp_y     = self.y
         # self.rp_y     = self.y[rp_id,:]
 
-        # self.B = mrsr.W
         self.error = mrsr.error
         self.D_x = D_x[:,self.X_rp_id]
 
-    # def fit_B(self): pass
+
+    def fit_B(self):
+        self.B = pinv_(self.D_x) @ self.D_y
+        self.rp_y_pi = np.linalg.pinv(self.rp_y)
+        self.bias = (self.rp_y - self.__predict__(self.X)).mean()
 
     def __predict__(self, X, y=None):
-        errors.not_train(self)
         # compute matrix of distances from input RPs
         D_x = cdist(X,self.rp_X)
         # estimate matrix of distances from output RPs
         D_y_hat = D_x @ self.B
 
-        y_hat = np.linalg.pinv(self.rp_y) @ D_y_hat.T
+        y_hat = self.rp_y_pi @ D_y_hat.T
         
         return -y_hat.T
 
-    def predict(self, X, pp):
-        if pp == True:
-            errors.not_train(self)
-            y_hat_ = self.__predict__(self.rp_X)
-            y_real = self.rp_y[self.X_rp_id,:]
-            bias = (y_real - y_hat_).mean()
-            return bias + self.__predict__(X)
-        else:
-            return super().predict(X)
+    def predict(self, X):
+        errors.not_train(self)
+        return self.bias + self.__predict__(X)
 
 
     def plot(self,plt,X=None, y=None, figsize=None):
