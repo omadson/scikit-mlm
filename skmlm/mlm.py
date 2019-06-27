@@ -1,6 +1,6 @@
 """Minimal Learning Machine classes for regression and classification."""
 import numpy as np
-
+from scipy import fftpack
 from scipy.spatial.distance import cdist
 from scipy.optimize import least_squares
 
@@ -438,22 +438,45 @@ class OS_MLMR(C_MLM):
     
     def fit_B(self):
         self.B = pinv_(self.D_x) @ self.D_y
-        self.rp_y_pi = np.linalg.pinv(self.rp_y)
-        self.bias = (self.rp_y - self.__predict__(self.X)).mean()
+        # self.rp_y_pi = np.linalg.pinv(self.rp_y)
+        # self.bias = (self.rp_y - self.__predict__(self.X)).mean()
 
-    def __predict__(self, X, y=None):
-        # compute matrix of distances from input RPs
-        D_x = cdist(X,self.rp_X)
-        # estimate matrix of distances from output RPs
-        D_y_hat = D_x @ self.B
+    # def predict(self, X, y=None):
+    #     errors.not_train(self)
+    #     # compute matrix of distances from input RPs
+    #     D_x = cdist(X,self.rp_X)
+    #     # estimate matrix of distances from output RPs
+    #     D_y_hat = D_x @ self.B
+    #     ii = np.random.choice(self.rp_y.shape[0], 1)
 
-        y_hat = self.rp_y_pi @ D_y_hat.T
+    #     A = np.delete(2 * (self.rp_y - self.rp_y[ii,:]), ii, axis=0)
+    #     b = np.delete(self.rp_y**2 + D_y_hat**2 - (self.rp_y[i,:]**2 - d_y_hat[i,:]**2) , i, axis=0)
+
+    #     Y_hat = np.array([self.__predict__(X[i,:], D_y_hat[i,:][np.newaxis].T, ii) for i in range(X.shape[0])])
+    #     return Y_hat
+
+    # def __predict__(self, x, d_y_hat, i):
+    #     A = np.delete(2 * (self.rp_y - self.rp_y[i,:]), i, axis=0)
+    #     b = np.delete(self.rp_y**2 + d_y_hat**2 - (self.rp_y[i,:]**2 - d_y_hat[i,:]**2) , i, axis=0)
+    #     y_hat = np.linalg.pinv(A) @ b
+    #     return y_hat[0]
+
+
+
+    # def __predict__(self, X, y=None):
+    #     # compute matrix of distances from input RPs
+    #     D_x = cdist(X,self.rp_X)
+    #     # estimate matrix of distances from output RPs
+    #     D_y_hat = D_x @ self.B
+
+    #     y_hat = self.rp_y_pi @ D_y_hat.T
         
-        return -y_hat.T
+    #     return -y_hat.T
 
-    def predict(self, X):
-        errors.not_train(self)
-        return self.bias + self.__predict__(X)
+
+    # def predict(self, X):
+    #     errors.not_train(self)
+    #     return self.bias + self.__predict__(X)
 
 
     def plot(self,plt,X=None, y=None, figsize=None):
