@@ -47,7 +47,7 @@ def get_metrics_MLM_gs(dataset_name, model_name, scores):
         params['n_hidden_f'] = [e.W.shape[1] for e in params['best_estimator']]
 
     for param_key in param_keys: params[param_key] = list()
-    best_params = [e.get_params() for e in params['best_estimator']]
+    best_params = [e.get_params() for e in estimator]
     
 
     for best_param in best_params:
