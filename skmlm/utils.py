@@ -39,7 +39,7 @@ def get_metrics_MLM_gs(dataset_name, model_name, scores):
         params['irp_number'] = [e.B.shape[0] for e in params['best_estimator']]
     elif e_name in ['os_mlm','nn_mlm']:
         param_keys = list(scores['estimator'][0].named_steps[e_name].get_params().keys())
-        params['best_estimator'] = [scores['estimator'][i].named_steps[e_name] for i in range(len(scores['estimator']))]
+        # params['best_estimator'] = [scores['estimator'][i].named_steps[e_name] for i in range(len(scores['estimator']))]
         params['irp_number'] = [e.B.shape[0] for e in params['best_estimator']]
     elif e_name == 'opelm':
         param_keys = list(scores['estimator'][0].named_steps[e_name].get_params().keys())
