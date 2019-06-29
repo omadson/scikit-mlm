@@ -290,10 +290,12 @@ class FCM_MLM(NN_MLM):
         c = fcm.labels_
         # homongenious_clusters
         homongenious_clusters = np.where(np.bincount(np.unique(np.vstack((c,self.y.argmax(axis=1))), axis=1)[0,:]) == 1)[0]
-        centers = fcm.centers[homongenious_clusters,:]
+        # centers = fcm.centers[homongenious_clusters,:]
+        centers = fcm.cluster_centers_[homongenious_clusters,:]
         # if all clusters are heterogenious, use all clusters
         if len(centers) == 0:
-            centers = fcm.centers
+            # centers = fcm.centers
+            centers = fcm.cluster_centers_
 
         # get most closest samples from centers
         rp_id = cdist(centers,self.X).argmin(axis=1)
