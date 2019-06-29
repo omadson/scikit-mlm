@@ -282,9 +282,11 @@ class FCM_MLM(NN_MLM):
 
         if self.rp_number <= 1:    self.rp_number = int(self.rp_number * N)
 
-        fcm = FCM(n_clusters=self.rp_number, random_state=self.random_state, max_iter=50)
+        # fcm = FCM(n_clusters=self.rp_number, random_state=self.random_state, max_iter=50)
+        fcm = FCM(k=self.rp_number, random_state=self.random_state, max_iter=50)
         fcm.fit(self.X)
-        c = fcm.u.argmax(axis=1)
+        # c = fcm.u.argmax(axis=1)
+        c = fcm.labels_
         # homongenious_clusters
         homongenious_clusters = np.where(np.bincount(np.unique(np.vstack((c,self.y.argmax(axis=1))), axis=1)[0,:]) == 1)[0]
         centers = fcm.centers[homongenious_clusters,:]
