@@ -4,7 +4,8 @@ from scipy import fftpack
 from scipy.spatial.distance import cdist
 from scipy.optimize import least_squares
 
-from fcmeans import FCM
+# from fcmeans import FCM
+from sklearn_extensions.fuzzy_kmeans import FuzzyKMeans as FCM
 from mrsr import MRSR
 from .utils import ON, pinv_, one_hot, ERRORS
 
