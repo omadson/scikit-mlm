@@ -36,6 +36,7 @@ def get_metrics_MLM_gs(dataset_name, model_name, scores):
     if e_name == 'gridsearchcv':
         param_keys = list(scores['estimator'][0].named_steps['gridsearchcv'].best_estimator_.get_params().keys())
         params['best_estimator'] = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_ for i in range(len(scores['estimator']))]
+        estimator = params['best_estimator']
         params['irp_number'] = [e.B.shape[0] for e in params['best_estimator']]
     elif e_name in ['os_mlm','nn_mlm']:
         param_keys = list(scores['estimator'][0].named_steps[e_name].get_params().keys())
