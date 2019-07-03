@@ -50,6 +50,7 @@ def get_metrics_MLM_gs(dataset_name, model_name, scores):
     for param_key in param_keys: params[param_key] = list()
     best_params = [e.get_params() for e in estimator]
     
+    del estimator
 
     for best_param in best_params:
         for parameter in best_param.keys():
