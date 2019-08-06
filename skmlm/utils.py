@@ -30,6 +30,20 @@ def get_metrics(dataset_name, model_name, scores):
     ordered_header = [k for i,j,k in header]
     return pd.DataFrame(pd.DataFrame(params)[ordered_header].values, columns=pd.MultiIndex.from_tuples(header))
 
+def get_metrics_KNN(dataset_name, scores):
+    params = dict()
+    params['n_neighbors']   = [scores['estimator'][i].named_steps['gridsearchcv'].best_estimator_.get_params()['n_neighbors'] for i in range(len(scores['test_accuracy']))]
+    params['test_accuracy'] = scores['test_accuracy']
+    params['fit_time']      = scores['fit_time']
+    params['score_time']    = scores['score_time']
+
+    header_ = list(params.keys())
+
+    header  = [i for i in itertools.product([dataset_name],['KNN'],header_)]
+    ordered_header = [k for i,j,k in header]
+    return pd.DataFrame(pd.DataFrame(params)[ordered_header].values, columns=pd.MultiIndex.from_tuples(header))
+
+
 def get_metrics_MLM_gs(dataset_name, model_name, scores):
     params = dict()
     e_name = list(filter(lambda x: x in ['opelm','os_mlm', 'nn_mlm', 'gridsearchcv'], scores['estimator'][0].named_steps.keys()))[0]
