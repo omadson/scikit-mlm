@@ -557,7 +557,7 @@ class OPELM(ELM):
 
         mrsr = MRSR(norm=1,max_feature_number=self.n_hidden-1)
 
-        mrsr.fit(H, self.y[np.newaxis].T)
+        mrsr.fit(H, self.y)
 
         self.M = mrsr.W
         self.W = self.W[:,mrsr.order]
