@@ -510,21 +510,26 @@ class ELM(BaseEstimator, RegressorMixin):
         self.random_state    = random_state
 
     def oh_convert(self, y):
-        self.y_oh = False if len(y.shape) == 1 else True
-        if self.y_oh == False: y = one_hot(y)
-        return y
+        if np.unique(y).shape[0] < 10:
+            self.y_oh = False if len(y.shape) == 1 else True
+            if self.y_oh == False: y = one_hot(y)
+            return y
+        else:
+            return y
+
 
     def fit(self, X, y):
-        self.X = X
+        self.X = np.concatenate((X, np.ones((X.shape[0],1))), axis=1)
         self.y = self.oh_convert(y)
 
         # Initialize the matrix B with values close to zero
         r = np.random.RandomState(self.random_state)
-        self.W = r.normal(0,1, (X.shape[1], self.n_hidden))
-        H = 1. / (1. + np.exp(-(X @ self.W)))
+        self.W = r.normal(0,1, (self.X.shape[1], self.n_hidden))
+        H = 1. / (1. + np.exp(-(self.X @ self.W)))
         self.M = np.linalg.pinv(H) @ self.y
 
     def predict(self, X, y=None):
+        X = np.concatenate((X, np.ones((X.shape[0],1))), axis=1)
         H_hat = 1. / (1. + np.exp(-(X @ self.W)))
         y_hat = H_hat @ self.M
 
@@ -533,21 +538,32 @@ class ELM(BaseEstimator, RegressorMixin):
         else:
             return y_hat.argmax(axis=1)
 
+class ELMR(ELM):
+    def predict(self, X, y=None):
+        X = np.concatenate((X, np.ones((X.shape[0],1))), axis=1)
+        H_hat = 1. / (1. + np.exp(-(X @ self.W)))
+        return H_hat @ self.M
 
 class OPELM(ELM):
     def fit(self, X, y):
-        self.X = X
+        self.X = np.concatenate((X, np.ones((X.shape[0],1))), axis=1)
         self.y = self.oh_convert(y)
 
         # Initialize the matrix B with values close to zero
         r = np.random.RandomState(self.random_state)
-        self.W = r.normal(0,1, (X.shape[1], self.n_hidden))
-        H = 1. / (1. + np.exp(-(X @ self.W)))
+        self.W = r.normal(0,1, (self.X.shape[1], self.n_hidden))
+        H = 1. / (1. + np.exp(-(self.X @ self.W)))
 
 
         mrsr = MRSR(norm=1,max_feature_number=self.n_hidden-1)
 
-        mrsr.fit(H, self.y)
+        mrsr.fit(H, self.y[np.newaxis].T)
 
         self.M = mrsr.W
         self.W = self.W[:,mrsr.order]
+
+class OPELMR(OPELM):
+    def predict(self, X, y=None):
+        X = np.concatenate((X, np.ones((X.shape[0],1))), axis=1)
+        H_hat = 1. / (1. + np.exp(-(X @ self.W)))
+        return H_hat @ self.M
