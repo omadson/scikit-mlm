@@ -56,9 +56,9 @@ class MLM(BaseEstimator, RegressorMixin):
         self.fit_B()
         self.X_red = 1 - self.B.shape[0] / self.X.shape[0]
         self.y_red = 1 - self.B.shape[1] / self.y.shape[0]
-        delattr(self, 'X')
-        delattr(self, 'y')
-        delattr(self, 'D_x')
+        # delattr(self, 'X')
+        # delattr(self, 'y')
+        # delattr(self, 'D_x')
         return self
 
     def predict(self, X, y=None):
@@ -94,7 +94,7 @@ class MLM(BaseEstimator, RegressorMixin):
         if X.shape[1] == 1:
             fig = plt.figure(figsize=figsize) if figsize != None else plt.figure()
             plt.scatter(X,y, marker='o', c='orange')
-            plt.scatter(self.rp_X[:,0],self.rp_y[:,0],alpha=0.9, facecolors='none',edgecolors='black',s=60,linewidths=2)
+            plt.scatter(self.rp_X[:,0],self.rp_y[:,0],alpha=0.7,edgecolors='black',s=60,linewidths=2)
             plt.plot(X_, y_, c='black')
         else:
             print("X have more that one dimensions.")
@@ -151,14 +151,14 @@ class MLMC(MLM):
         if self.y_oh == False: y = one_hot(y)
         return y
 
-    def plot(self,plt,X=None, y=None, figsize=(6,6)):
+    def plot(self,plt,X=None, y=None, figsize=(6,6),savefig=False, figname='out.pdf', h = .008):
         X = X if X != None else self.X
         y = y if y != None else self.y
         y = y.argmax(axis=1) if len(y.shape) > 1 else y
 
         if X.shape[1] == 2:
 
-            h = .005  # step size in the mesh
+            # step size in the mesh
             # create a mesh to plot in
             x_min, x_max = X[:, 0].min(), X[:, 0].max()
             y_min, y_max = X[:, 1].min(), X[:, 1].max()
@@ -172,10 +172,12 @@ class MLMC(MLM):
             fig = plt.figure(figsize=figsize)
             plt.scatter(X[y == 0,0],X[y == 0,1], marker='o', c='orange')
             plt.scatter(X[y == 1,0],X[y == 1,1], marker='o', c='green')
-            plt.scatter(self.rp_X[:,0],self.rp_X[:,1],alpha=0.9, facecolors='none',edgecolors='black',s=60,linewidths=2)
+            # plt.scatter(self.rp_X[:,0],self.rp_X[:,1],alpha=0.6, facecolors='black',edgecolors='black',s=60,linewidths=1)
             plt.axis('off')
             plt.contour(xx, yy, Z, colors='black')
             plt.show()
+            if savefig == True:
+                fig.savefig(figname, bbox_inches='tight')
         else:
             print("X have more that two dimensions.")
 
