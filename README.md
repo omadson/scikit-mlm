@@ -16,6 +16,12 @@ the `scikit-mlm` package is available in [PyPI](https://pypi.org/project/scikit-
 pip install scikit-mlm
 ```
 
+### Having problems?
+
+ - you may need to use the `--user` flag for the commands above to install in a non-system location (depends on your environment). alternatively, you can execute the `pip` commands with `sudo` (not recommended).
+ - you may need to add the `--use-wheel` option if you have an older `pip` version (wheels are now the default binary package format for `pip`).
+
+
 ## basic usage
 example of classification with the [nearest neighbor MLM](https://link.springer.com/article/10.1007%2Fs11063-017-9587-5#Sec9) classifier:
 ```Python
