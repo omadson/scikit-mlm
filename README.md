@@ -4,6 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/scikit-mlm.svg)](http://pypi.org/project/scikit-mlm/)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/w/omadson/scikit-mlm.svg)](https://github.com/omadson/scikit-mlm/pulse)
 [![GitHub last commit](https://img.shields.io/github/last-commit/omadson/scikit-mlm.svg)](https://github.com/omadson/scikit-mlm/commit/master)
+[![Downloads](https://pepy.tech/badge/scikit-mlm)](https://pepy.tech/project/scikit-mlm)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2875802.svg)](https://doi.org/10.5281/zenodo.2875802)
 
 
