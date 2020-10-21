@@ -3,6 +3,7 @@ skmlm/mrsr.py
 __pycache__/
 *.py[cod]
 *$py.class
+.ipynb_checkpoints/
 
 # C extensions
 *.so
