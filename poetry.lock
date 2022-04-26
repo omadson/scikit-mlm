@@ -287,7 +287,7 @@ traitlets = "*"
 
 [[package]]
 name = "jupyterlab"
-version = "2.2.8"
+version = "2.2.10"
 description = "The JupyterLab notebook server extension."
 category = "dev"
 optional = false
@@ -821,7 +821,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "6f7a6f8142217acb37e6c9c1e46feac152604c42977cc3118dbb74a830df252b"
+content-hash = "a195e1fe6d19a4ea58848eec5ad9b3b6ba6ef1140b7e3ff554bb5531b089a8ca"
 
 [metadata.files]
 appnope = [
@@ -975,8 +975,8 @@ jupyter-core = [
     {file = "jupyter_core-4.6.3.tar.gz", hash = "sha256:394fd5dd787e7c8861741880bdf8a00ce39f95de5d18e579c74b882522219e7e"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-2.2.8-py3-none-any.whl", hash = "sha256:95d0509557881cfa8a5fcdf225f2fca46faf1bc52fc56a28e0b72fcc594c90ab"},
-    {file = "jupyterlab-2.2.8.tar.gz", hash = "sha256:c8377bee30504919c1e79949f9fe35443ab7f5c4be622c95307e8108410c8b8c"},
+    {file = "jupyterlab-2.2.10-py3-none-any.whl", hash = "sha256:b51fbd28b93f22d310207b8720ba3ee7e56da8bdf281fa2b92843680932f7262"},
+    {file = "jupyterlab-2.2.10.tar.gz", hash = "sha256:802a57815a6af0f42dfd19a1b6b5d526f0605f1422c2d395cf837141975321e2"},
 ]
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
