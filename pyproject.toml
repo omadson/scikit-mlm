@@ -22,7 +22,7 @@ python = "^3.8"
 mrsr = "^0.1.0"
 sklearn = "^0.0"
 sklearn-extensions = "^0.0.2"
-numpy = "^1.19.2"
+numpy = "^1.22.0"
 scipy = "^1.5.3"
 pandas = "^1.1.3"
 
